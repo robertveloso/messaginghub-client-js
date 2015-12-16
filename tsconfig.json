@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "out": "hub.js",
+        "target": "es5",
+        "sourceMap": true,
+        "rootDir": "src",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "declaration": false,
+        "noImplicitAny": false,
+        "removeComments": true,
+        "noLib": false,
+        "preserveConstEnums": true,
+        "suppressImplicitAnyIndexErrors": true
+    },
+    "compileOnSave": true,
+    "buildOnSave": false,
+    "exclude": [
+        "node_modules"
+    ],
+    "atom": {
+        "rewriteTsconfig": false
+    }
+}
