@@ -6,8 +6,8 @@ All you need is:
 
 **For connect**
 
-´´´javascript
-var client = new MessageHubClient(/*you can pass uri here*/); // Default uri *server.msging.net*
+```javascript
+var client = new MessageHubClient(/*you can pass uri here*/);
 client.connect(user, pass)
   .then(function(receiversRegister) {
       /*register what you want to lister?*/
@@ -15,10 +15,11 @@ client.connect(user, pass)
   .catch(function(error) {
       /*Samething is wrong :(*/
   })
-´´´
+```
 
 **For Listener**
-´´´javascript
+
+```javascript
 var myListenerForJson = function() {
     return  {
         accept: 'json',
@@ -28,7 +29,6 @@ var myListenerForJson = function() {
     }
 }
 
-
 // on ´connect´ callback ...
 receiversRegister.addReceiver(myListenerForJson);
-´´´
+```
