@@ -1,49 +1,25 @@
-# MessageHub SDK for Javascript
+# messaging-hub-client-js
+> Simple [Messaging Hub](http://msging.net/) client for JavaScript
 
-Simple [Messaging Hub](http://msging.net/) client.
+**This is a work in progress**
 
-All you need is:
-
-**For connect**
-
-```javascript
-var client = new MessageHubClient(/*you can pass uri here*/);
-client.connect(user, pass)
-  .then(function(hubRegisters) {
-      /*register what you want to lister?*/
-  })
-  .catch(function(error) {
-      /*Samething is wrong :(*/
-  })
-```
-
-**For Listener**
+## Connecting
 
 ```javascript
-var myListenerForJson = {
-        accept: 'json',
-        onReceive: function(message) {
-          /*Do samething :)*/
-        }
-    }
-}
+var client = new MessagingHubClient(uri);
 
-// on client ´connect´ callback ...
-hubRegisters.addReceiver(myListenerForJson);
-```
+client.onMessageReceived('text/json', myJsonListener);
+client.onMessageReceived('application/pdf', function(message) {
+  // do something
+  client.sendMessage("Thank you for the PDF file!", message.from);
+});
 
-**For Send**
+client.onNotificationReceived(myNotificationListener);
 
-```javascript
-var mySenderForJson = {
-        accept: 'json',
-        send: function(message, to) {
-          /*Send samething :)*/
-        }
-        // ... see in docs others options
-    }
-}
-
-// on client ´connect´ callback ...
-hubRegisters.addSender(mySenderForJson);
+client.connect(user, password, function(err, session) {
+  // send a message to some user
+  client.sendMessage("Hello, world", "ipsum@dolor.sit", function(err) {
+    // treat possible error
+  });
+});
 ```
