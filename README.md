@@ -4,10 +4,16 @@ Simple [Messaging Hub](http://msging.net/) client.
 
 All you need is:
 
+**Prepare**
+
+```javascript
+var MessagingHubClient = require('messaginghub-client');
+var client = new MessagingHubClient();
+```
+
 **For connect**
 
 ```javascript
-var client = new MessageHubClient(/*you can pass uri here*/);
 client.connect(user, pass)
   .then(function(hubRegisters) {
       /*register what you want to lister?*/

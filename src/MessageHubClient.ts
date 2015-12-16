@@ -1,4 +1,4 @@
-class MessageHubClient {
+class MessagingHubClient {
   connect() : any {
     undefined;
   }
