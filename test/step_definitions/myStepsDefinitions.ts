@@ -1,4 +1,4 @@
-import chai from "chai";
+import chai = require("../../node_modules/chai");
 
 export = () => {
 
