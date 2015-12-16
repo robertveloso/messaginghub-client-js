@@ -1,4 +1,6 @@
-import chai = require("../../node_modules/chai");
+/// <reference path="../../typings/chai/chai.d.ts"/>
+
+import chai = require("chai");
 
 export = () => {
 
