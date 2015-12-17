@@ -27,5 +27,8 @@
     "tsc": "^1.20150623.0",
     "tsd": "^0.6.5",
     "typescript": "^1.7.5"
+  },
+  "dependencies": {
+    "lime-js": "0.0.2"
   }
 }
