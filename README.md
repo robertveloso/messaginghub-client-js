@@ -4,7 +4,7 @@
 
 **This is a work in progress**
 
-# How to use?
+# How to use
 
 **First instance ...**
 
@@ -35,8 +35,8 @@ client.connect(user, password, onConnect);
 ```javascript
 function onConnect(session, err) {
   // send a message to some user
-  var msg = { type: "application/json", message: "Hello, world" };
-  client.sendMessage(msg, "ipsum@dolor.sit", function(err) {
+  var msg = { type: "application/json", content: "Hello, world", to: "my@friend.com" };
+  client.sendMessage(msg, function(err) {
     // if !err, message sent!
   });
 }
