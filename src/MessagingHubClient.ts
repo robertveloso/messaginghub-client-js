@@ -26,7 +26,6 @@ export class MessagingHubClient {
 
   connect(user: string, password: string, callback: ICallback<Session>): void {
     // TODO: implement MessagingHubClient.connect
-    callback(undefined, null);
   }
 
   sendMessage(message: Message, callback: ICallback<Error>) {
