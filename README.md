@@ -1,8 +1,8 @@
+**This is a work in progress**
+
 [![bitHound Overall Score](https://www.bithound.io/github/takenet/messaginghub-client-js/badges/score.svg)](https://www.bithound.io/github/takenet/messaginghub-client-js)    
 
 > Simple [Messaging Hub](http://msging.net/) client for JavaScript
-
-**This is a work in progress**
 
 # How to use
 
