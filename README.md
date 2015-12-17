@@ -1,9 +1,13 @@
 **This is a work in progress**
 
-> Simple [Messaging Hub](http://msging.net/) client for JavaScript
+Simple Messaging Hub client for JavaScript
+
+[![bitHound Overall Score](https://www.bithound.io/github/takenet/messaginghub-client-js/badges/score.svg)](https://www.bithound.io/github/takenet/messaginghub-client-js)
+[![npm version](https://img.shields.io/npm/v/messaginghub-client.svg?style=flat-square)](https://www.npmjs.com/package/messaginhub-client)
+[![npm downloads](https://img.shields.io/npm/dm/messaginghub-client.svg?style=flat-square)](https://www.npmjs.com/package/messaginghub-client) [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/takenet/messaginghub-client-js) [![Codeship](https://img.shields.io/codeship/1043f7b0-80e0-0133-5021-02612484d25d/develop.svg?style=flat-square)](https://codeship.com/projects/121068)
 
 
-[![Codeship Status for takenet/messaginghub-client-js](https://codeship.com/projects/1043f7b0-80e0-0133-5021-02612484d25d/status?branch=master)](https://codeship.com/projects/121068) [![bitHound Overall Score](https://www.bithound.io/github/takenet/messaginghub-client-js/badges/score.svg)](https://www.bithound.io/github/takenet/messaginghub-client-js)
+See more about Messaging Hub [here](http://msging.net/)
 
 # How to use
 
