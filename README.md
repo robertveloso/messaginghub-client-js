@@ -1,10 +1,9 @@
 **This is a work in progress**
 
-|||
-|-----------------------------------------------------------------------|-----------------|
-|[![bitHound Overall Score](https://www.bithound.io/github/takenet/messaginghub-client-js/badges/score.svg)](https://www.bithound.io/github/takenet/messaginghub-client-js) | [![Codeship Status for takenet/messaginghub-client-js](https://codeship.com/projects/1043f7b0-80e0-0133-5021-02612484d25d/status?branch=master)](https://codeship.com/projects/121068)|
-
 > Simple [Messaging Hub](http://msging.net/) client for JavaScript
+
+
+[![Codeship Status for takenet/messaginghub-client-js](https://codeship.com/projects/1043f7b0-80e0-0133-5021-02612484d25d/status?branch=master)](https://codeship.com/projects/121068) [![bitHound Overall Score](https://www.bithound.io/github/takenet/messaginghub-client-js/badges/score.svg)](https://www.bithound.io/github/takenet/messaginghub-client-js)
 
 # How to use
 
