@@ -1,26 +1,43 @@
-# messaging-hub-client-js
+[![bitHound Overall Score](https://www.bithound.io/github/takenet/messaginghub-client-js/badges/score.svg)](https://www.bithound.io/github/takenet/messaginghub-client-js)    
 
 > Simple [Messaging Hub](http://msging.net/) client for JavaScript
 
 **This is a work in progress**
 
-## Connecting
+# How to use?
+
+**First instance ...**
 
 ```javascript
 var client = new MessagingHubClient(uri);
+```
 
-client.onMessageReceived('text/json', myJsonListener);
-client.onMessageReceived('application/pdf', function(message) {
+**Register your callbacks ...**
+
+```javascript
+client.onMessageReceived("application/json", function(message) {
   // do something
-  client.sendMessage("Thank you for the PDF file!", message.from);
 });
 
-client.onNotificationReceived(myNotificationListener);
+client.onNotificationReceived(function(notification) {
+  // show something
+});
+```
 
-client.connect(user, password, function(session, err) {
+**Connect ...**
+
+```javascript
+client.connect(user, password, onConnect);
+```
+
+**And send message ...**
+
+```javascript
+function onConnect(session, err) {
   // send a message to some user
-  client.sendMessage("Hello, world", "ipsum@dolor.sit", function(err) {
-    // treat possible error
+  var msg = { type: "application/json", message: "Hello, world" };
+  client.sendMessage(msg, "ipsum@dolor.sit", function(err) {
+    // if !err, message sent!
   });
-});
+}
 ```
