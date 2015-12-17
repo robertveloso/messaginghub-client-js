@@ -6,5 +6,5 @@ Feature: A MessaginHubClient
   Scenario: Should connect
     Given Exist a available connection with wc://messaginhub.io
     And I have a MessaginHubClient instance
-    When I connect
+    When Nian connect with password 'P@$$w0rD'
     Then Should be execute a callback function with undefined error

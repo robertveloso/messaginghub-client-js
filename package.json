@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "node_modules/.bin/tsd install",
     "build": "./node_modules/.bin/tsc --out hub.js",
-    "test": "./node_modules/.bin/cucumber-js --compiler ts:ts-node/register -f pretty"
+    "test": "./node_modules/.bin/cucumber-js --compiler ts:ts-node/register"
   },
   "repository": {
     "type": "git",

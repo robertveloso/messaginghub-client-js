@@ -1,29 +1,22 @@
-class ClientChannel {}
-class Message {}
-class Notification {}
-class Command {}
-class Session {}
+export class ClientChannel {}
+export class Message {}
+export class Notification {}
+export class Command {}
+export class Session {}
 
-interface IMessageReceiver {
-  (message: Message): void;
-}
-interface INotificationReceiver {
-  (message: Notification): void;
+interface IReceiverCallback<T> {
+  (response: T): void;
 }
 
-interface ISessionCallback {
-  (error: Error, session: Session): void;
+interface ICallback<T> {
+  (error: Error, response: T): void;
 }
 
-interface IErrorCallback {
-  (error: Error): void;
-}
-
-class MessagingHubClient {
+export class MessagingHubClient {
 
   private uri: string;
-  private messageReceivers:  { [type: string]: IMessageReceiver };
-  private notificationReceivers: { [event: string]: INotificationReceiver };
+  private messageReceivers:  { [type: string]: IReceiverCallback<Message> };
+  private notificationReceivers: { [event: string]: IReceiverCallback<Notification> };
 
   private clientChannel: ClientChannel;
 
@@ -31,24 +24,25 @@ class MessagingHubClient {
     this.uri = uri;
   }
 
-  connect(user: string, password: string, callback: ISessionCallback): void {
+  connect(user: string, password: string, callback: ICallback<Session>): void {
     // TODO: implement MessagingHubClient.connect
+    callback(undefined, null);
   }
 
-  sendMessage(message: Message, callback: IErrorCallback) {
+  sendMessage(message: Message, callback: ICallback<Error>) {
     // TODO: implement MessagingHubClient.sendMessage
   }
-  sendNotification(notification: Notification, callback: IErrorCallback) {
+  sendNotification(notification: Notification, callback: ICallback<Error>) {
     // TODO: implement MessagingHubClient.sendNotification
   }
-  sendCommand(command: Command, callback: IErrorCallback) {
+  sendCommand(command: Command, callback: ICallback<Error>) {
     // TODO: implement MessagingHubClient.sendCommand
   }
 
-  onMessageReceived(type: string, receiver: IMessageReceiver) {
+  onMessageReceived(type: string, receiver: IReceiverCallback<Message>) {
     this.messageReceivers[type] = receiver;
   }
-  onNotificationReceived(event: string, receiver: INotificationReceiver) {
+  onNotificationReceived(event: string, receiver: IReceiverCallback<Notification>) {
     this.notificationReceivers[event] = receiver;
   }
 }
