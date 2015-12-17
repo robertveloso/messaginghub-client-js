@@ -1,6 +1,6 @@
 {
-  "name": "messaginghub-client-js",
-  "version": "1.0.0",
+  "name": "messaginghub-client",
+  "version": "0.0.1",
   "description": "Simple [Messaging Hub](http://msging.net/) client.",
   "main": "hub.js",
   "scripts": {
