@@ -3,23 +3,12 @@
         "out": "hub.js",
         "target": "es5",
         "module": "commonjs",
-        "sourceMap": true,
-        "rootDir": ".",
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "declaration": false,
-        "noImplicitAny": false,
         "removeComments": true,
-        "noLib": false,
-        "preserveConstEnums": true,
-        "suppressImplicitAnyIndexErrors": true
+        "rootDir": "."
     },
     "compileOnSave": true,
-    "buildOnSave": false,
+    "buildOnSave": true,
     "exclude": [
         "node_modules"
-    ],
-    "atom": {
-        "rewriteTsconfig": false
-    }
+    ]
 }

@@ -1,4 +1,5 @@
 # messaging-hub-client-js
+
 > Simple [Messaging Hub](http://msging.net/) client for JavaScript
 
 **This is a work in progress**
@@ -16,7 +17,7 @@ client.onMessageReceived('application/pdf', function(message) {
 
 client.onNotificationReceived(myNotificationListener);
 
-client.connect(user, password, function(err, session) {
+client.connect(user, password, function(session, err) {
   // send a message to some user
   client.sendMessage("Hello, world", "ipsum@dolor.sit", function(err) {
     // treat possible error

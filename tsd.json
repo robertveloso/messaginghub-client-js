@@ -6,13 +6,19 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "es6-promise/es6-promise.d.ts": {
-      "commit": "11322524f8db9cdb921427cad84cd22fe2d4f965"
+      "commit": "78ba6e41543e5ababbd1dda19797601be3c1f304"
     },
     "assertion-error/assertion-error.d.ts": {
       "commit": "11322524f8db9cdb921427cad84cd22fe2d4f965"
     },
     "chai/chai.d.ts": {
       "commit": "11322524f8db9cdb921427cad84cd22fe2d4f965"
+    },
+    "cucumber/cucumber.d.ts": {
+      "commit": "78ba6e41543e5ababbd1dda19797601be3c1f304"
+    },
+    "sinon/sinon.d.ts": {
+      "commit": "78ba6e41543e5ababbd1dda19797601be3c1f304"
     }
   }
 }
