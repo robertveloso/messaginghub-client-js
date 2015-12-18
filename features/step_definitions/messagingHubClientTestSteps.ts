@@ -5,7 +5,8 @@
 
 import chai = require("chai");
 import sinon = require("sinon");
-import { MessagingHubClient, ClientChannel, Message, Notification, Command, Session } from "../../src/MessagingHubClient";
+import Lime = require("lime-js");
+import { MessagingHubClient } from "../../src/MessagingHubClient";
 
 type Callback = cucumber.CallbackStepDefinition;
 

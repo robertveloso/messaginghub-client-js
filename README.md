@@ -14,7 +14,7 @@ See more about Messaging Hub [here](http://msging.net/)
 **First instance ...**
 
 ```javascript
-var client = new MessagingHubClient(uri);
+var client = new MessagingHubClient();
 ```
 
 **Register your callbacks ...**

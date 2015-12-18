@@ -1,47 +1,53 @@
-export class ClientChannel {}
-export class Message {}
-export class Notification {}
-export class Command {}
-export class Session {}
+import Lime = require('lime-js');
+
+let identity = (x) => x;
 
 interface IReceiverCallback<T> {
-  (response: T): void;
+    (response: T): void;
 }
 
 interface ICallback<T> {
-  (error: Error, response: T): void;
+    (error: Error, response: T): void;
 }
 
 export class MessagingHubClient {
 
-  private uri: string;
-  private messageReceivers:  { [type: string]: IReceiverCallback<Message> };
-  private notificationReceivers: { [event: string]: IReceiverCallback<Notification> };
+    private uri: string;
+    private transport: Lime.Transport;
+    private clientChannel: Lime.ClientChannel;
+    private messageReceivers:  { [type: string]: IReceiverCallback<Lime.Message> };
+    private notificationReceivers: { [event: string]: IReceiverCallback<Lime.Notification> };
 
-  private clientChannel: ClientChannel;
+    constructor() {
+        this.uri = "ws://msging.net:8081";
+        this.transport = new Lime.WebSocketTransport(true);
+        this.clientChannel = new Lime.ClientChannel(this.transport);
+        this.clientChannel.onMessage = (m) => (this.messageReceivers[m.type] || identity)(m);
+        this.clientChannel.onNotification = (n) => (this.notificationReceivers[n.event] || identity)(n);
+    }
 
-  constructor(uri: string) {
-    this.uri = uri;
-  }
+    connect(user: string, password: string, callback: ICallback<Lime.Session>): void {
+        this.transport.onOpen = () => {
+            let authentication = new Lime.GuestAuthentication();
+            Lime.ClientChannelExtensions.establishSession(this.clientChannel, "none", "none", user, authentication, "", callback);
+        }
+        this.transport.open(this.uri);
+    }
 
-  connect(user: string, password: string, callback: ICallback<Session>): void {
-    // TODO: implement MessagingHubClient.connect
-  }
+    sendMessage(message: Lime.Message, callback: ICallback<Error>) {
+        this.clientChannel.sendMessage(message);
+    }
+    sendNotification(notification: Lime.Notification, callback: ICallback<Error>) {
+        this.clientChannel.sendNotification(notification);
+    }
+    sendCommand(command: Lime.Command, callback: ICallback<Error>) {
+        this.clientChannel.sendCommand(command);
+    }
 
-  sendMessage(message: Message, callback: ICallback<Error>) {
-    // TODO: implement MessagingHubClient.sendMessage
-  }
-  sendNotification(notification: Notification, callback: ICallback<Error>) {
-    // TODO: implement MessagingHubClient.sendNotification
-  }
-  sendCommand(command: Command, callback: ICallback<Error>) {
-    // TODO: implement MessagingHubClient.sendCommand
-  }
-
-  onMessageReceived(type: string, receiver: IReceiverCallback<Message>) {
-    this.messageReceivers[type] = receiver;
-  }
-  onNotificationReceived(event: string, receiver: IReceiverCallback<Notification>) {
-    this.notificationReceivers[event] = receiver;
-  }
+    onMessageReceived(type: string, receiver: IReceiverCallback<Lime.Message>) {
+        this.messageReceivers[type] = receiver;
+    }
+    onNotificationReceived(event: string, receiver: IReceiverCallback<Lime.Notification>) {
+        this.notificationReceivers[event] = receiver;
+    }
 }
