@@ -1,10 +1,5 @@
 {
-  "test": [
-    "**/features/**"
-  ],
-
   "critics": {
       "lint": {"engine": "eslint"}
   }
-
 }

@@ -9,16 +9,19 @@
       "commit": "78ba6e41543e5ababbd1dda19797601be3c1f304"
     },
     "assertion-error/assertion-error.d.ts": {
-      "commit": "11322524f8db9cdb921427cad84cd22fe2d4f965"
+      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
     },
     "chai/chai.d.ts": {
-      "commit": "11322524f8db9cdb921427cad84cd22fe2d4f965"
-    },
-    "cucumber/cucumber.d.ts": {
-      "commit": "78ba6e41543e5ababbd1dda19797601be3c1f304"
+      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
     },
     "sinon/sinon.d.ts": {
-      "commit": "78ba6e41543e5ababbd1dda19797601be3c1f304"
+      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
+    },
+    "jasmine/jasmine.d.ts": {
+      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
+    },
+    "mocha/mocha.d.ts": {
+      "commit": "40c60850ad6c8175a62d5ab48c4e016ea5b3dffe"
     }
   }
 }
