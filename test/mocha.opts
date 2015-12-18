@@ -1,0 +1,6 @@
+--require chai
+--require sinon
+--require lime-js
+--reporter dot
+--ui bdd
+--timeout 200

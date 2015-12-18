@@ -15,7 +15,7 @@ module.exports = function (wallaby) {
     // you can configure built-in compiler by passing options to it
     // See interface CompilerOptions in
     // https://github.com/Microsoft/TypeScript/blob/master/src/compiler/types.ts
-    
+
     compilers: {
       '**/*.ts': wallaby.compilers.typeScript({
         module: 5,  // ES6

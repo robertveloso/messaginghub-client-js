@@ -1,4 +1,4 @@
-import Lime = require('lime-js');
+import Lime = require("lime-js/");
 
 let identity = (x) => x;
 
@@ -30,7 +30,7 @@ export class MessagingHubClient {
         this.transport.onOpen = () => {
             let authentication = new Lime.GuestAuthentication();
             Lime.ClientChannelExtensions.establishSession(this.clientChannel, "none", "none", user, authentication, "", callback);
-        }
+        };
         this.transport.open(this.uri);
     }
 
