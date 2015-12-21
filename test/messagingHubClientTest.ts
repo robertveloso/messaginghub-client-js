@@ -5,7 +5,6 @@
 
 import chai = require("chai");
 import sinon = require("sinon");
-import Lime = require('lime-js');
 import MessagingHubClient from '../src/MessagingHubClient';
 
 describe("MessagingHubClient tests", () => {

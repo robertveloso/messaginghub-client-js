@@ -18,7 +18,7 @@ export default class MessagingHubClient {
     private messageReceivers:  { [type: string]: IReceiverCallback<Lime.Message> };
     private notificationReceivers: { [event: string]: IReceiverCallback<Lime.Notification> };
 
-    constructor(uri: string) {
+    constructor(uri : string = "ws:\/\/msging.net:8081") {
         this.uri = uri;
         this.transport = new Lime.WebSocketTransport(true);
         this.clientChannel = new Lime.ClientChannel(this.transport);
