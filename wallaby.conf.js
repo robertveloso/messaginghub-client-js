@@ -2,13 +2,13 @@ module.exports = function (wallaby) {
   return {
     files: [
       {pattern: 'node_modules/chai/chai.js', instrument: false},
-
+      {pattern: 'node_modules/sinon/sinon.js', instrument: false},
       'src/**/*.ts',
     ],
     tests: [
       'test/**/*Test.ts'
     ],
-    debug: true
+    debug: true,
     testFramework: 'mocha',
 
     // TypeScript compiler is on by default with default options,
@@ -18,19 +18,16 @@ module.exports = function (wallaby) {
 
     compilers: {
       '**/*.ts': wallaby.compilers.typeScript({
-        module: 5,  // ES6
-        target: 2  // ES6
+        module: 1,
+        orderFilesByReferenceComments: true
       })
     },
-    preprocessors: {
-      '**/*.js': file => require('babel-core').transform(
-                               file.content,
-                               {sourceMap: true, presets: ['es2015']})
-    }
-
     bootstrap: function () {
       window.expect = chai.expect;
       var should = chai.should();
-    }
+    },
+    env: {
+     type: 'node'
+   }
   };
 };

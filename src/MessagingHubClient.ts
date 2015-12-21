@@ -1,5 +1,3 @@
-import Lime = require("lime-js/");
-
 let identity = (x) => x;
 
 interface IReceiverCallback<T> {
@@ -10,7 +8,7 @@ interface ICallback<T> {
     (error: Error, response: T): void;
 }
 
-export class MessagingHubClient {
+export default class MessagingHubClient {
 
     private uri: string;
     private transport: Lime.Transport;
@@ -18,8 +16,8 @@ export class MessagingHubClient {
     private messageReceivers:  { [type: string]: IReceiverCallback<Lime.Message> };
     private notificationReceivers: { [event: string]: IReceiverCallback<Lime.Notification> };
 
-    constructor() {
-        this.uri = "ws://msging.net:8081";
+    constructor(uri : string = "ws:\/\/msging.net:8081") {
+        this.uri = uri;
         this.transport = new Lime.WebSocketTransport(true);
         this.clientChannel = new Lime.ClientChannel(this.transport);
         this.clientChannel.onMessage = (m) => (this.messageReceivers[m.type] || identity)(m);
