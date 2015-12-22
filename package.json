@@ -12,7 +12,7 @@
     "url": "git+https://github.com/takenet/messaginghub-client-js.git"
   },
   "author": "Take.net",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/takenet/messaginghub-client-js/issues"
   },
@@ -29,9 +29,6 @@
     "mocha": "^2.3.4",
     "sinon": "^1.17.2",
     "sinon-chai": "^2.8.0",
-    "tsc": "^1.20150623.0",
-    "tsd": "^0.6.5",
-    "typescript-require": "^0.2.9",
     "wallaby-webpack": "0.0.10",
     "webpack": "^1.12.9"
   },

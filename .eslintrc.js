@@ -7,6 +7,9 @@ module.exports = {
         'semi': [2, 'always'],
         'comma-style': [2, 'last']
     },
+    'ecmaFeatures': {
+        'modules': true
+    },
     'env': {
         'es6': true,
         'node': true

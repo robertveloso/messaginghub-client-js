@@ -17,7 +17,7 @@ export class TcpTransport {
         });
     }
 
-    send (envelope) {
+    send(envelope) {
         var envelopeString = JSON.stringify(envelope);
         this._socket.write(envelopeString);
         if (this.traceEnabled) {
@@ -25,33 +25,33 @@ export class TcpTransport {
         }
     }
 
-    onEnvelope (envelope) { }
+    onEnvelope(envelope) { }
 
-    open (uri) {
+    open(uri) {
         this.encryption = Lime.SessionEncryption.none;
         this.compression = Lime.SessionCompression.none;
         this._socket.connect(uri, this.onOpen);
     }
 
-    close () {
+    close() {
         this._socket.end();
     }
 
-    getSupportedCompression () {
+    getSupportedCompression() {
         throw new Error("Compression change is not supported");
     }
 
-    getSupportedEncryption () { }
-
-    setCompression (compression) {
+    getSupportedEncryption() {
         throw new Error("Encryption change is not supported");
     }
 
-    setEncryption (encryption) { }
+    setCompression(compression) {}
 
-    onOpen () { }
+    setEncryption(encryption) {}
 
-    onClose () { }
+    onOpen() {}
 
-    onError (error) { }
+    onClose() {}
+
+    onError(error) {}
 }

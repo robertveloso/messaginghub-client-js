@@ -2,11 +2,11 @@ import Lime from 'lime-js';
 
 export default class MessagingHubClient {
 
-    get uri() { return this._url; }
+    get uri() { return this._uri; }
 
-    constructor(uri) {
+    constructor(uri, transport = new Lime.WebSocketTransport(true)) {
         this._uri = uri;
-        this._transport = new Lime.WebSocketTransport(true);
+        this._transport = transport;
         this._clientChannel = new Lime.ClientChannel(this.transport);
         this.messageReceivers = {};
         this.notificationReceivers = {};
@@ -22,34 +22,43 @@ export default class MessagingHubClient {
         this.transport.open(this.uri);
     }
 
-    sendMessage(message, callback) {
+    sendMessage(message) {
         this._clientChannel.sendMessage(message);
-        callback();
     }
 
-    sendNotification(notification, callback) {
+    sendNotification(notification) {
         this._clientChannel.sendNotification(notification);
-        callback();
     }
 
-    sendCommand(command, callback) {
+    sendCommand(command) {
         this._clientChannel.sendCommand(command);
-        callback();
     }
 
     addMessageReceiver(type, receiverCallback) {
+        this.messageReceivers[type] = this.messageReceivers[type] || [];
         this.messageReceivers[type].push(receiverCallback);
+        return receiverCallback;
     }
 
     addNotificationReceiver(event, receiverCallback) {
+        this.notificationReceivers[event] = this.notificationReceivers[event] || [];
         this.notificationReceivers[event].push(receiverCallback);
+        return receiverCallback;
     }
 
     removeMessageReceiver(type, receiver) {
-        return this.messageReceivers[type] = this.messageReceivers[type].filter((r) => r != receiver);
+        try {
+            return this.messageReceivers[type] = this.messageReceivers[type].filter((r) => r != receiver);
+        } catch(err) {
+            throw new Error(`No message receiver for type '${type}'`);
+        }
     }
 
     removeNotificationReceiver(event, receiver) {
-        return this.notificationReceivers[event] = this.notificationReceivers[event].filter((r) => r != receiver);
+        try {
+            return this.notificationReceivers[event] = this.notificationReceivers[event].filter((r) => r != receiver);
+        } catch(err) {
+            throw new Error(`No notification receiver for event '${event}'`);
+        }
     }
 }
