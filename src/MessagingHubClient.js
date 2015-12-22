@@ -17,31 +17,32 @@ export default class MessagingHubClient {
     connect(user, password, callback) {
         this.transport.onOpen = () => {
             let authentication = new Lime.GuestAuthentication();
-            Lime.ClientChannelExtensions.establishSession(this._clientChannel, "none", "none", user, authentication, "", callback);
+            Lime.ClientChannelExtensions.establishSession(this._clientChannel, 'none', 'none', user, authentication, '', callback);
         };
         this.transport.open(this.uri);
     }
 
     sendMessage(message, callback) {
         this._clientChannel.sendMessage(message);
+        callback();
     }
 
     sendNotification(notification, callback) {
         this._clientChannel.sendNotification(notification);
+        callback();
     }
 
     sendCommand(command, callback) {
         this._clientChannel.sendCommand(command);
+        callback();
     }
 
     addMessageReceiver(type, receiverCallback) {
         this.messageReceivers[type].push(receiverCallback);
-        return receiver;
     }
 
     addNotificationReceiver(event, receiverCallback) {
         this.notificationReceivers[event].push(receiverCallback);
-        return receiver;
     }
 
     removeMessageReceiver(type, receiver) {

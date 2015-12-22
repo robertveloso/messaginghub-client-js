@@ -6,10 +6,11 @@ module.exports = {
         filename: "hub.js"
     },
     module: {
+        preLoaders: [
+            { test: /(src|test)(.+)\.js$/, loader: 'eslint' }
+        ],
         loaders: [
-            {
-                test: /\.js$/, exclude: /node_modules/, loader: 'babel', query: { presets: ['es2015'] }
-            }
+            { test: /(src|test)(.+)\.js$/, exclude: /node_modules/, loader: 'babel' }
         ]
     },
     devtool: 'source-map'

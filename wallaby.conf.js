@@ -17,11 +17,11 @@ var wallabyPostprocessor = wallabyWebpack(webpackConfig);
 module.exports = function (wallaby) {
     return {
         files: [
-            {pattern: 'src/**/*.js', load: false}
+            {pattern: 'src/*.js', load: false}
         ],
 
         tests: [
-            {pattern: 'test/**/*Test.js', load: false}
+            {pattern: 'test/*Test.js'}
         ],
 
         debug: true,
@@ -37,11 +37,6 @@ module.exports = function (wallaby) {
         bootstrap: function (wallaby) {
             var mocha = wallaby.testFramework;
             mocha.ui('bdd');
-        },
-
-        env: {
-            type: "node",
-            runner: "node"
         }
     };
 };

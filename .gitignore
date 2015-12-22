@@ -93,5 +93,5 @@ typings
 
 # App
 hub.js*
-
+dist/
 docs/build
