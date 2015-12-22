@@ -1,9 +1,9 @@
 module.exports = {
-    context: __dirname + "/src",
-    entry: "./MessagingHubClient.js",
+    context: __dirname + '/src',
+    entry: './MessagingHubClient.js',
     output: {
-        path: __dirname + "/dist",
-        filename: "hub.js"
+        path: __dirname + '/dist',
+        filename: 'hub.js'
     },
     module: {
         preLoaders: [
