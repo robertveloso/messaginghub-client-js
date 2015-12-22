@@ -18,15 +18,15 @@ var wallabyPostprocessor = wallabyWebpack(webpackConfig);
 module.exports = function (wallaby) {
     return {
         files: [
-
           {pattern: 'node_modules/chai/chai.js', instrument: false},
           {pattern: 'node_modules/sinon/lib/sinon.js', instrument: false},
           {pattern: 'node_modules/sinon/lib/**/*.js', load: false},
-          {pattern: 'src/*.js', load: false}
+          {pattern: 'test/helpers/*.js', instrument: false},
+          {pattern: 'src/**/*.js', load: false}
         ],
 
         tests: [
-            {pattern: 'test/*Test.js', load: false}
+            {pattern: 'test/**/*Test.js', load: false}
         ],
 
         debug: true,
