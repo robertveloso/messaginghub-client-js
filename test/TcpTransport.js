@@ -1,9 +1,9 @@
 "use strict";
 
 import net from 'net';
-import Lime from 'lime-js';
+import {Lime} from 'lime-js';
 
-export class TcpTransport {
+export default class TcpTransport {
 
     constructor(traceEnabled) {
         this._traceEnabled = traceEnabled;

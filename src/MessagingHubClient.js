@@ -1,4 +1,4 @@
-import Lime from 'lime-js';
+import {Lime} from 'lime-js';
 
 export default class MessagingHubClient {
 
@@ -7,7 +7,7 @@ export default class MessagingHubClient {
     constructor(uri, transport = new Lime.WebSocketTransport(true)) {
         this._uri = uri;
         this._transport = transport;
-        this._clientChannel = new Lime.ClientChannel(this.transport);
+        this._clientChannel = new Lime.ClientChannel(this._transport);
         this.messageReceivers = {};
         this.notificationReceivers = {};
         this._clientChannel.onMessage = (m) => (this.messageReceivers[m.type] || []).map((f) => f(m));
@@ -15,11 +15,11 @@ export default class MessagingHubClient {
     }
 
     connect(user, password, callback) {
-        this.transport.onOpen = () => {
+        this._transport.onOpen = () => {
             let authentication = new Lime.GuestAuthentication();
             Lime.ClientChannelExtensions.establishSession(this._clientChannel, 'none', 'none', user, authentication, '', callback);
         };
-        this.transport.open(this.uri);
+        this._transport.open(this.uri);
     }
 
     sendMessage(message) {
