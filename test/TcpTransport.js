@@ -1,46 +1,57 @@
 "use strict";
-var net = require('net');
-var Lime = require('lime-js');
-var TcpTransport = (function () {
-    function TcpTransport(traceEnabled) {
-        var _this = this;
-        this.traceEnabled = traceEnabled;
-        this.socket = new net.Socket();
-        this.socket.on('close', this.onClose);
-        this.socket.on('data', function (e) {
-            if (_this.traceEnabled) {
+
+import net from 'net';
+import Lime from 'lime-js';
+
+export class TcpTransport {
+
+    constructor(traceEnabled) {
+        this._traceEnabled = traceEnabled;
+        this._socket = new net.Socket();
+        this._socket.on('close', this.onClose);
+        this._socket.on('data', (e) => {
+            if (this._traceEnabled) {
                 console.debug("TcpTransport RECEIVE: " + e.data);
             }
-            _this.onEnvelope(JSON.parse(e.data));
+            this.onEnvelope(JSON.parse(e.data));
         });
     }
-    TcpTransport.prototype.send = function (envelope) {
+
+    send (envelope) {
         var envelopeString = JSON.stringify(envelope);
-        this.socket.write(envelopeString);
+        this._socket.write(envelopeString);
         if (this.traceEnabled) {
             console.debug("TcpTransport SEND: " + envelopeString);
         }
-    };
-    TcpTransport.prototype.onEnvelope = function (envelope) { };
-    TcpTransport.prototype.open = function (uri) {
+    }
+
+    onEnvelope (envelope) { }
+
+    open (uri) {
         this.encryption = Lime.SessionEncryption.none;
         this.compression = Lime.SessionCompression.none;
-        this.socket.connect(uri, this.onOpen);
-    };
-    TcpTransport.prototype.close = function () {
-        this.socket.end();
-    };
-    TcpTransport.prototype.getSupportedCompression = function () {
+        this._socket.connect(uri, this.onOpen);
+    }
+
+    close () {
+        this._socket.end();
+    }
+
+    getSupportedCompression () {
         throw new Error("Compression change is not supported");
-    };
-    TcpTransport.prototype.setCompression = function (compression) { };
-    TcpTransport.prototype.getSupportedEncryption = function () {
+    }
+
+    getSupportedEncryption () { }
+
+    setCompression (compression) {
         throw new Error("Encryption change is not supported");
-    };
-    TcpTransport.prototype.setEncryption = function (encryption) { };
-    TcpTransport.prototype.onOpen = function () { };
-    TcpTransport.prototype.onClose = function () { };
-    TcpTransport.prototype.onError = function (error) { };
-    return TcpTransport;
-})();
-exports.TcpTransport = TcpTransport;
+    }
+
+    setEncryption (encryption) { }
+
+    onOpen () { }
+
+    onClose () { }
+
+    onError (error) { }
+}
