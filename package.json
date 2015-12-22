@@ -8,8 +8,8 @@
     "build": "./node_modules/.bin/webpack",
     "lint": "./node_modules/.bin/eslint . || true",
     "commit": "./node_modules/.bin/git-cz",
-    "test": "./node_modules/.bin/mocha --recursive --compilers js:babel-core/register",
-    "test:single": "./node_modules/.bin/mocha --recursive --compilers js:babel-core/register -w"
+    "test": "npm run test:single -- -w",
+    "test:single": "./node_modules/.bin/mocha --recursive --compilers js:babel-core/register"
   },
   "repository": {
     "type": "git",
