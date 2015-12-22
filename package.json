@@ -4,8 +4,12 @@
   "description": "Simple [Messaging Hub](http://msging.net/) client.",
   "main": "hub.js",
   "scripts": {
+    "commit": "./node_modules/.bin/git-cz",
     "build": "./node_modules/.bin/webpack",
-    "test": "./node_modules/.bin/mocha --recursive --compilers js:babel-core/register"
+    "lint": "./node_modules/.bin/eslint . || true",
+    "commit": "./node_modules/.bin/git-cz",
+    "test": "./node_modules/.bin/mocha --recursive --compilers js:babel-core/register",
+    "test:single": "./node_modules/.bin/mocha --recursive --compilers js:babel-core/register -w"
   },
   "repository": {
     "type": "git",
@@ -24,9 +28,11 @@
     "babel-loader": "^6.2.0",
     "babel-preset-es2015": "^6.3.13",
     "chai": "^3.4.1",
+    "cz-conventional-changelog": "^1.1.5",
     "eslint": "^1.10.3",
     "eslint-loader": "^1.1.1",
     "mocha": "^2.3.4",
+    "semantic-release": "^4.3.5",
     "sinon": "^1.17.2",
     "sinon-chai": "^2.8.0",
     "wallaby-webpack": "0.0.10",
@@ -34,5 +40,10 @@
   },
   "dependencies": {
     "lime-js": "^0.0.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

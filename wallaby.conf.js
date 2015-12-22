@@ -17,16 +17,22 @@ var wallabyPostprocessor = wallabyWebpack(webpackConfig);
 module.exports = function (wallaby) {
     return {
         files: [
-            {pattern: 'src/*.js', load: false}
+
+          {pattern: 'node_modules/chai/chai.js', instrument: false},
+          {pattern: 'node_modules/sinon/lib/sinon.js', instrument: false},
+          {pattern: 'node_modules/sinon/lib/**/*.js', load: false},
+          {pattern: 'src/*.js', load: false}
         ],
 
         tests: [
-            {pattern: 'test/*Test.js'}
+            {pattern: 'test/*Test.js', load: false}
         ],
 
         debug: true,
 
         testFramework: 'mocha',
+
+        preprocessors: { '**/*.js': file => babel.transform(file.content, {sourceMap: true}) },
 
         compilers: {
             '**/*.js': wallaby.compilers.babel(babelConfig)
@@ -37,6 +43,7 @@ module.exports = function (wallaby) {
         bootstrap: function (wallaby) {
             var mocha = wallaby.testFramework;
             mocha.ui('bdd');
+            window.__moduleBundler.loadTests();
         }
     };
 };

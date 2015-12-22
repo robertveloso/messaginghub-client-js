@@ -1,11 +1,9 @@
-import sinon from 'sinon';
 import MessagingHubClient from '../src/MessagingHubClient';
+import chai from 'chai'
 
 describe("MessagingHubClient tests", () => {
-    it("should execute callback without error after connect", () => {
+    it("should execute callback without error after connect", (done) => {
         var client = new MessagingHubClient.default("ws://msging.net:8081");
-        var connectCallback = sinon.spy();
-        client.connect("", "", connectCallback);
-        connectCallback.calledWith(undefined, sinon.match.any).should.to.be.ok;
+        client.connect("", "", done);
     });
 });
