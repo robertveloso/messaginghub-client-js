@@ -13,38 +13,45 @@ See more about Messaging Hub [here](http://msging.net/)
 
 # How to use
 
-**First instance ...**
+## Instantiate the MessagingHub Client
 
 ```javascript
 var client = new MessagingHubClient();
 ```
 
-**Register your callbacks ...**
+## Add receivers
 
 ```javascript
-client.onMessageReceived("application/json", function(message) {
+client.addMessageReceiver("application/json", function(message) {
   // do something
 });
 
-client.onNotificationReceived(function(notification) {
+client.addNotificationReceiver("message_received", function(notification) {
   // show something
 });
 ```
 
-**Connect ...**
+### Remove receivers
+The client.addMessageReceiver and client.addNotificationReceiver methods return each a function which, when called, cancels the receiver subscription:
+
+```javascript
+var removeJsonReceiver = client.addMessageReceiver("application/json", handleJson);
+// ...
+removeJsonReceiver();
+```
+
+## Connect
 
 ```javascript
 client.connect(user, password, onConnect);
 ```
 
-**And send message ...**
+## Send messages
 
 ```javascript
-function onConnect(session, err) {
+function onConnect(err, session) {
   // send a message to some user
   var msg = { type: "application/json", content: "Hello, world", to: "my@friend.com" };
-  client.sendMessage(msg, function(err) {
-    // if !err, message sent!
-  });
+  client.sendMessage(msg);
 }
 ```
