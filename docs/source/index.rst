@@ -1,16 +1,20 @@
-.. messaginghub-client-js documentation master file, created by
-   sphinx-quickstart on Tue Dec 22 09:25:43 2015.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to messaginghub-client-js's documentation!
 ==================================================
 
-Contents:
+Another simple header
+=====================
+
+Same text explain thins
+
+    This is a code!
+
+Guide:
+^^^^^^
 
 .. toctree::
    :maxdepth: 2
 
+   overview
 
 
 Indices and tables
@@ -19,4 +23,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
