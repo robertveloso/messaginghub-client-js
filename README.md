@@ -1,6 +1,8 @@
+# messaging-hub-client-js
+> Simple Messaging Hub client for JavaScript
+
 **This is a work in progress**
 
-Simple Messaging Hub client for JavaScript
 
 [![bitHound Overall Score](https://www.bithound.io/github/takenet/messaginghub-client-js/badges/score.svg)](https://www.bithound.io/github/takenet/messaginghub-client-js)
 [![npm version](https://img.shields.io/npm/v/messaginghub-client.svg?style=flat-square)](https://www.npmjs.com/package/messaginhub-client)
