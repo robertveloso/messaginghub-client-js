@@ -19,8 +19,9 @@ before_script:
   - npm prune
 script:
   - npm run lint
-  - npm run bundle
+  - npm run test:check
   - npm run test:single
+  - npm run bundle
 after_success:
   - npm run semantic-release
 branches:
