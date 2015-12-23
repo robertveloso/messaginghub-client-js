@@ -24,7 +24,7 @@ script:
   - npm run bundle
 after_success:
   - npm run semantic-release
-  - npm run test:check-coverage
+  - npm run test:upload-coverage
 branches:
   except:
     - "/^v\\d+\\.\\d+\\.\\d+$/"

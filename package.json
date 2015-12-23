@@ -8,7 +8,7 @@
     "bundle": "./node_modules/.bin/webpack",
     "lint": "./node_modules/.bin/eslint . || true",
     "test": "./node_modules/.bin/mocha ./test --recursive --compilers js:babel-core/register -w",
-    "test:single": "./node_modules/.bin/babel-node ./node_modules/babel-istanbul/lib/cli cover ./node_modules/mocha/bin/_mocha -- --recursive ./test",
+    "test:single": "./node_modules/.bin/babel-node ./node_modules/babel-istanbul/lib/cli cover ./node_modules/mocha/bin/_mocha -- --recursive ./test -R spec",
     "test:check-coverage": "./node_modules/.bin/istanbul check-coverage",
     "test:upload-coverage": "cat ./coverage/lcov.info | codecov",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
