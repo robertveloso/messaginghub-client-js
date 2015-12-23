@@ -9,9 +9,9 @@ babelConfig.babel = babel;
 module.exports = function (wallaby) {
     return {
         files: [
-          'node_modules/chai/chai.js',
-          'test/helpers/*.js',
-          'src/**/*.js'
+            'node_modules/chai/chai.js',
+            'test/helpers/*.js',
+            'src/**/*.js'
         ],
 
         tests: [
@@ -27,11 +27,11 @@ module.exports = function (wallaby) {
         },
 
         env: {
-          type: 'node',
-          params: {
-            runner: '--harmony --harmony_arrow_functions',
-            env: 'TEST=true'
-          }
+            type: 'node',
+            params: {
+                runner: '--harmony --harmony_arrow_functions',
+                env: 'TEST=true'
+            }
         },
 
         bootstrap: function (wallaby) {
