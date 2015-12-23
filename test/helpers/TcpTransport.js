@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-import net from 'net';
+import {net} from 'net';
 import {Lime} from 'lime-js';
 
-console.debug = console.debug || console.log;
+console.debug = console.debug || console.log; // eslint-disable-line no-console
 
 export default class TcpTransport {
 
@@ -13,7 +13,7 @@ export default class TcpTransport {
         this._socket.on('close', this.onClose);
         this._socket.on('data', (e) => {
             if (this._traceEnabled) {
-                console.debug("TcpTransport RECEIVE: " + e);
+                console.debug('TcpTransport RECEIVE: ' + e); // eslint-disable-line no-console
             }
             this.onEnvelope(JSON.parse(e));
         });
@@ -23,11 +23,11 @@ export default class TcpTransport {
         var envelopeString = JSON.stringify(envelope);
         this._socket.write(envelopeString);
         if (this._traceEnabled) {
-            console.debug("TcpTransport SEND: " + envelopeString);
+            console.debug('TcpTransport SEND: ' + envelopeString); // eslint-disable-line no-console
         }
     }
 
-    onEnvelope(envelope) { }
+    onEnvelope() { }
 
     open(uri) {
         var host = uri.split(':');
@@ -41,20 +41,20 @@ export default class TcpTransport {
     }
 
     getSupportedCompression() {
-        throw new Error("Compression change is not supported");
+        throw new Error('Compression change is not supported');
     }
 
     getSupportedEncryption() {
-        throw new Error("Encryption change is not supported");
+        throw new Error('Encryption change is not supported');
     }
 
-    setCompression(compression) {}
+    setCompression() {}
 
-    setEncryption(encryption) {}
+    setEncryption() {}
 
     onOpen() {}
 
     onClose() {}
 
-    onError(error) {}
+    onError() {}
 }
