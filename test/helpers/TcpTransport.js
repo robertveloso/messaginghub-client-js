@@ -1,6 +1,6 @@
 'use strict';
 
-import {net} from 'net';
+import net from 'net';
 import {Lime} from 'lime-js';
 
 console.debug = console.debug || console.log; // eslint-disable-line no-console
