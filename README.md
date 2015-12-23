@@ -1,48 +1,59 @@
+# messaging-hub-client-js
+> Simple Messaging Hub client for JavaScript
+
 **This is a work in progress**
 
-Simple Messaging Hub client for JavaScript
 
 [![bitHound Overall Score](https://www.bithound.io/github/takenet/messaginghub-client-js/badges/score.svg)](https://www.bithound.io/github/takenet/messaginghub-client-js)
 [![npm version](https://img.shields.io/npm/v/messaginghub-client.svg?style=flat-square)](https://www.npmjs.com/package/messaginhub-client)
-[![npm downloads](https://img.shields.io/npm/dm/messaginghub-client.svg?style=flat-square)](https://www.npmjs.com/package/messaginghub-client) [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/takenet/messaginghub-client-js) [![Codeship](https://img.shields.io/codeship/1043f7b0-80e0-0133-5021-02612484d25d/develop.svg?style=flat-square)](https://codeship.com/projects/121068)
+[![npm downloads](https://img.shields.io/npm/dm/messaginghub-client.svg?style=flat-square)](https://www.npmjs.com/package/messaginghub-client) [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/takenet/messaginghub-client-js)
+[![Travis branch](https://img.shields.io/travis/rust-lang/rust/master.svg?style=flat-square)](https://travis-ci.org/takenet/messaginghub-client-js)
 [![huBoard](https://img.shields.io/badge/board-tasks-green.svg?style=flat-square)](https://huboard.com/takenet/messaginghub-client-js/#/)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)](http://commitizen.github.io/cz-cli/)
 
 See more about Messaging Hub [here](http://msging.net/)
 
 # How to use
 
-**First instance ...**
+## Instantiate the MessagingHub Client
 
 ```javascript
 var client = new MessagingHubClient();
 ```
 
-**Register your callbacks ...**
+## Add receivers
 
 ```javascript
-client.onMessageReceived("application/json", function(message) {
+client.addMessageReceiver("application/json", function(message) {
   // do something
 });
 
-client.onNotificationReceived(function(notification) {
+client.addNotificationReceiver("message_received", function(notification) {
   // show something
 });
 ```
 
-**Connect ...**
+### Remove receivers
+The client.addMessageReceiver and client.addNotificationReceiver methods return each a function which, when called, cancels the receiver subscription:
+
+```javascript
+var removeJsonReceiver = client.addMessageReceiver("application/json", handleJson);
+// ...
+removeJsonReceiver();
+```
+
+## Connect
 
 ```javascript
 client.connect(user, password, onConnect);
 ```
 
-**And send message ...**
+## Send messages
 
 ```javascript
-function onConnect(session, err) {
+function onConnect(err, session) {
   // send a message to some user
   var msg = { type: "application/json", content: "Hello, world", to: "my@friend.com" };
-  client.sendMessage(msg, function(err) {
-    // if !err, message sent!
-  });
+  client.sendMessage(msg);
 }
 ```
