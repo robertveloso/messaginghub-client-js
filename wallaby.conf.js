@@ -29,6 +29,8 @@ module.exports = function (wallaby) {
             {pattern: 'test/**/*Test.js', load: false}
         ],
 
+        env: {type: 'node'},
+
         debug: true,
 
         testFramework: 'mocha',
