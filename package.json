@@ -7,7 +7,7 @@
     "bundle": "./node_modules/.bin/webpack",
     "lint": "./node_modules/.bin/eslint . || true",
     "test": "npm run test:single -- -w",
-    "test:single": "./node_modules/mocha/bin/_mocha ./test --recursive --compilers js:babel-core/register",
+    "test:single": "./node_modules/.bin/mocha ./test --recursive --compilers js:babel-core/register",
     "test:coverage": "./node_modules/.bin/babel-node ./node_modules/babel-istanbul/lib/cli cover ./node_modules/mocha/bin/_mocha -- --recursive ./test",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
@@ -37,8 +37,6 @@
     "istanbul": "^0.4.1",
     "mocha": "^2.3.4",
     "semantic-release": "^4.3.5",
-    "sinon": "^1.17.2",
-    "sinon-chai": "^2.8.0",
     "wallaby-webpack": "0.0.10",
     "webpack": "^1.12.9"
   },
