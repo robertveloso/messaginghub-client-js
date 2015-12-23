@@ -65,7 +65,8 @@ describe("MessagingHubClient tests", function() {
     });
 
     it("should send messages", (done) => {
-        let remove = this.client.addNotificationReceiver('pong', () => {
+        let remove = this.client.addMessageReceiver('text/plain', (m) => {
+            m.content.should.equal('pong');
             remove();
             done();
         });
@@ -73,18 +74,19 @@ describe("MessagingHubClient tests", function() {
     });
 
     it("should send notifications", (done) => {
-        let remove = this.client.addNotificationReceiver('pong', () => {
+        let remove = this.client.addNotificationReceiver('pong', (n) => {
             remove();
             done();
         });
         this.client.sendNotification({ event: 'ping' });
     });
 
-    it("should send commands", (done) => {
-        let remove = this.client.addNotificationReceiver('pong', () => {
-            remove();
+    it("should send commands and receive a response", (done) => {
+        this.client.sendCommand({ id: 'test', method: 'get', uri: '/ping' }, (c) => {
+            c.id.should.equal('test');
+            c.method.should.equal('get');
+            c.status.should.equal('success');
             done();
         });
-        this.client.sendCommand({ method: 'get', uri: '/ping' });
     });
 });
