@@ -21,10 +21,10 @@ script:
   - npm run lint
   - npm run test:single
   - npm run test:check-coverage
+  - npm run test:upload-coverage
   - npm run bundle
 after_success:
   - npm run semantic-release
-  - npm run test:upload-coverage
 branches:
   except:
     - "/^v\\d+\\.\\d+\\.\\d+$/"

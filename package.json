@@ -50,7 +50,7 @@
       "path": "./node_modules/cz-conventional-changelog"
     },
     "ghooks": {
-      "pre-post": "npm run test:single"
+      "pre-post": "npm run test:single && test:check-coverage"
     }
   }
 }
