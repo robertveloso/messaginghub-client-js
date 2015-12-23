@@ -19,6 +19,12 @@ export default net.createServer((socket) => {
                     state: 'established'
                 }));
             }
+        } else {
+            if(json.content === 'ping' || json.event === 'ping' || json.uri === '/ping') {
+                socket.write(JSON.stringify({
+                    event: 'pong'
+                }));
+            }
         }
     });
 });
