@@ -8,7 +8,7 @@
     "lint": "./node_modules/.bin/eslint . || true",
     "test": "./node_modules/.bin/mocha ./test --recursive --compilers js:babel-core/register -w",
     "test:single": "./node_modules/.bin/babel-node ./node_modules/babel-istanbul/lib/cli cover ./node_modules/mocha/bin/_mocha -- --recursive ./test",
-    "test:check": "./node_modules/.bin/istanbul check-coverage ./node_modules/mocha/bin/_mocha -- --recursive ./test",
+    "test:check": "./node_modules/.bin/babel-node ./node_modules/babel-istanbul/lib/cli cover ./node_modules/mocha/bin/_mocha -- --recursive ./test && ./node_modules/.bin/istanbul check-coverage --branches 70",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
