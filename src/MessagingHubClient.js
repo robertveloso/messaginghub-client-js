@@ -34,31 +34,15 @@ export default class MessagingHubClient {
         this._clientChannel.sendCommand(command);
     }
 
-    addMessageReceiver(type, receiverCallback) {
+    addMessageReceiver(type, receiver) {
         this.messageReceivers[type] = this.messageReceivers[type] || [];
-        this.messageReceivers[type].push(receiverCallback);
-        return receiverCallback;
+        this.messageReceivers[type].push(receiver);
+        return () => this.messageReceivers[type] = this.messageReceivers[type].filter((r) => r !== receiver);
     }
 
-    addNotificationReceiver(event, receiverCallback) {
+    addNotificationReceiver(event, receiver) {
         this.notificationReceivers[event] = this.notificationReceivers[event] || [];
-        this.notificationReceivers[event].push(receiverCallback);
-        return receiverCallback;
-    }
-
-    removeMessageReceiver(type, receiver) {
-        try {
-            return this.messageReceivers[type] = this.messageReceivers[type].filter((r) => r != receiver);
-        } catch(err) {
-            throw new Error(`No message receiver for type '${type}'`);
-        }
-    }
-
-    removeNotificationReceiver(event, receiver) {
-        try {
-            return this.notificationReceivers[event] = this.notificationReceivers[event].filter((r) => r != receiver);
-        } catch(err) {
-            throw new Error(`No notification receiver for event '${event}'`);
-        }
+        this.notificationReceivers[event].push(receiver);
+        return () => this.notificationReceivers[event] = this.notificationReceivers[event].filter((r) => r !== receiver);
     }
 }
