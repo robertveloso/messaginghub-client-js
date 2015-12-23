@@ -87,5 +87,8 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# App
+hub.js*
 dist/
-docs/
+docs/build
