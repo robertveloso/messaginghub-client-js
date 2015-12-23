@@ -6,9 +6,8 @@
     "commit": "./node_modules/.bin/git-cz",
     "bundle": "./node_modules/.bin/webpack",
     "lint": "./node_modules/.bin/eslint . || true",
-    "test": "npm run test:single -- -w",
-    "test:single": "./node_modules/.bin/mocha ./test --recursive --compilers js:babel-core/register",
-    "test:coverage": "./node_modules/.bin/babel-node ./node_modules/babel-istanbul/lib/cli cover ./node_modules/mocha/bin/_mocha -- --recursive ./test",
+    "test": "./node_modules/.bin/mocha ./test --recursive --compilers js:babel-core/register -w",
+    "test:single": "./node_modules/.bin/babel-node ./node_modules/babel-istanbul/lib/cli cover ./node_modules/mocha/bin/_mocha -- --recursive ./test",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
