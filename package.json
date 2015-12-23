@@ -5,7 +5,7 @@
   "main": "hub.js",
   "scripts": {
     "commit": "./node_modules/.bin/git-cz",
-    "build": "./node_modules/.bin/webpack",
+    "bundle": "./node_modules/.bin/webpack",
     "lint": "./node_modules/.bin/eslint . || true",
     "test": "npm run test:single -- -w",
     "test:single": "./node_modules/.bin/mocha --recursive --compilers js:babel-core/register",
