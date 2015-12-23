@@ -88,10 +88,8 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-# Typescript
-typings
-
 # App
 hub.js*
-dist/
+d
+t/
 docs/build
