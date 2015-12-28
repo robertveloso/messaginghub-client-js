@@ -2,11 +2,6 @@
 function stateResponse(request, state, logger) {
 
     var envelope = JSON.parse(request.data);
-    logger.info('with state -> ', state);
-    if (typeof state !== 'number') {
-        state = 0;
-    }
-    state++;
 
     var respData = {
         id: '0',
@@ -21,7 +16,5 @@ function stateResponse(request, state, logger) {
         respData.state = 'unknown';
     }
 
-    logger.info('Response ', respData, ' with state -> ', state);
-
-    return JSON.stringify({ data: respData });
+    return { data: JSON.stringify(respData) }; 
 }
