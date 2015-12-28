@@ -4,11 +4,20 @@
     "protocol": "tcp",
     "stubs": [
         {
-            "predicates": [{ "inject": "<%- stringify(filename, 'hasState.js') %>" }],
-            "responses": [{ "inject": "<%- stringify(filename, 'stateResponse.js') %>" }]
+            "predicates": [{ "inject": "function(request, logger) { return JSON.parse(request.data).hasOwnProperty('state'); }" }],
+            "responses": [{ "inject": "<%- stringify(filename, 'authResponse.js') %>" }]
+        },
+        {
+            "predicates": [{ "inject": "function(request, logger) { return JSON.parse(request.data).hasOwnProperty('method'); }" }],
+            "responses": [{ "inject": "<%- stringify(filename, 'commandResponse.js') %>" }]
+        },
+        {
+            "predicates": [{ "inject": "function(request, logger) { return JSON.parse(request.data).hasOwnProperty('event'); }" }],
+            "responses": [{ "inject": "<%- stringify(filename, 'eventResponse.js') %>" }]
+        },
+        {
+            "predicates": [{ "inject": "function(request, logger) { return JSON.parse(request.data).hasOwnProperty('content'); }" }],
+            "responses": [{ "inject": "<%- stringify(filename, 'messageResponse.js') %>" }]
         }
-    ],
-    "endOfRequestResolver": {
-      "inject": "<%- stringify(filename, 'endRequestResolver.js') %>"
-    }
+    ]
 }

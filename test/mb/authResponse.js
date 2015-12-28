@@ -16,5 +16,5 @@ function stateResponse(request, state, logger) {
         respData.state = 'unknown';
     }
 
-    return { data: JSON.stringify(respData) }; 
+    return { data: JSON.stringify(respData) };
 }
