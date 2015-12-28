@@ -1,4 +1,6 @@
-sudo: false
+sudo: required
+services:
+  - docker
 language: node_js
 cache:
   directories:
@@ -15,8 +17,14 @@ node_js:
   - '4'
 before_install:
   - npm i -g npm@^2.0.0
+  - docker build -t cpoepke/mountebank-basis .
+  - docker run -d -p 127.0.0.1:80:4567 cpoepke/mountebank-basis /bin/sh -c "cd /root/sinatra; bundle exec foreman start;"
+  - docker ps -a
+  - docker run cpoepke/mountebank-basis /bin/sh -c "cd /root/sinatra; bundle exec rake test"
+
 before_script:
   - npm prune
+  - npm run test:serve
 script:
   - npm run lint
   - npm run test:single

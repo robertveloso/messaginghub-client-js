@@ -12,6 +12,10 @@
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square)](https://github.com/semantic-release/semantic-release)
 [![codecov.io](https://codecov.io/github/takenet/messaginghub-client-js/coverage.svg?branch=develop)](https://codecov.io/github/takenet/messaginghub-client-js?branch=develop)
 
+--------
+
+![codecov.io](https://codecov.io/github/takenet/messaginghub-client-js/branch.svg?branch=develop)
+
 See more about Messaging Hub [here](http://messaginghub.io/)
 
 ## How to use
