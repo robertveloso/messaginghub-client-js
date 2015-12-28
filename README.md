@@ -14,15 +14,17 @@
 
 See more about Messaging Hub [here](http://msging.net/)
 
-# How to use
+## How to use
 
-## Instantiate the MessagingHub Client
+    npm i messaginghub-client
+
+### Instantiate the MessagingHub Client
 
 ```javascript
 var client = new MessagingHubClient();
 ```
 
-## Add receivers
+### Add receivers
 
 ```javascript
 client.addMessageReceiver("application/json", function(message) {
@@ -34,7 +36,8 @@ client.addNotificationReceiver("message_received", function(notification) {
 });
 ```
 
-### Remove receivers
+#### Remove receivers
+
 The client.addMessageReceiver and client.addNotificationReceiver methods return each a function which, when called, cancels the receiver subscription:
 
 ```javascript
@@ -43,13 +46,13 @@ var removeJsonReceiver = client.addMessageReceiver("application/json", handleJso
 removeJsonReceiver();
 ```
 
-## Connect
+### Connect
 
 ```javascript
 client.connect(user, password, onConnect);
 ```
 
-## Send messages
+### Send messages
 
 ```javascript
 function onConnect(err, session) {

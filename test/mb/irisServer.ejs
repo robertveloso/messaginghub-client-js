@@ -1,0 +1,14 @@
+{
+    "port": 8124,
+    "name": "Iris",
+    "protocol": "tcp",
+    "stubs": [
+        {
+            "predicates": [{ "inject": "<%- stringify(filename, 'hasState.js') %>" }],
+            "responses": [{ "inject": "<%- stringify(filename, 'stateResponse.js') %>" }]
+        }
+    ],
+    "endOfRequestResolver": {
+      "inject": "<%- stringify(filename, 'endRequestResolver.js') %>"
+    }
+}

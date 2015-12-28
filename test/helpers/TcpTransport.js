@@ -3,7 +3,7 @@
 import net from 'net';
 import {Lime} from 'lime-js';
 
-console.debug = console.debug || console.log; // eslint-disable-line no-console
+var logger = console.debug || console.log; // eslint-disable-line no-console
 
 export default class TcpTransport {
 
@@ -13,7 +13,7 @@ export default class TcpTransport {
         this._socket.on('close', this.onClose);
         this._socket.on('data', (e) => {
             if (this._traceEnabled) {
-                console.debug('TcpTransport RECEIVE: ' + e); // eslint-disable-line no-console
+                logger('TcpTransport RECEIVE: ' + e);
             }
             this.onEnvelope(JSON.parse(e));
         });
@@ -23,7 +23,7 @@ export default class TcpTransport {
         var envelopeString = JSON.stringify(envelope);
         this._socket.write(envelopeString);
         if (this._traceEnabled) {
-            console.debug('TcpTransport SEND: ' + envelopeString); // eslint-disable-line no-console
+            logger('TcpTransport SEND: ' + envelopeString);
         }
     }
 

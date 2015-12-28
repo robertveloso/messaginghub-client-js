@@ -4,15 +4,10 @@
 
 import MessagingHubClient from '../src/MessagingHubClient';
 import TcpTransport from './helpers/TcpTransport';
-import TcpLimeServer from './helpers/TcpLimeServer';
 
 require('chai').should();
 
 describe('MessagingHubClient tests', function() {
-
-    before((done) => {
-        TcpLimeServer.listen(8124, done);
-    });
 
     it('should execute callback without error after connect', (done) => {
         this.client = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
