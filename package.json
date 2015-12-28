@@ -1,6 +1,6 @@
 {
   "name": "messaginghub-client",
-  "description": "Simple [Messaging Hub](http://msging.net/) client.",
+  "description": "Simple messaging mub client.",
   "main": "hub.js",
   "scripts": {
     "commit": "./node_modules/.bin/git-cz",
