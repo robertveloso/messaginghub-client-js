@@ -2,7 +2,7 @@
 function messageResponse(request, state, logger) {
 
     var envelope = JSON.parse(request.data);
-    
+
     var respData = {
         type: 'text/plain'
     };
