@@ -1,9 +1,9 @@
-/* eslint-disable-line no-unused-vars */
+/* eslint-disable no-unused-vars */
 function stateResponse(request, state, logger) {
 
     var envelope = JSON.parse(request.data);
     logger.info('with state -> ', state);
-    if (typeof state !== 'Number') {
+    if (typeof state !== 'number') {
         state = 0;
     }
     state++;
