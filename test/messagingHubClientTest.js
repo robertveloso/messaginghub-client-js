@@ -56,11 +56,13 @@ describe('MessagingHubClient tests', function() {
         this.client._clientChannel.onNotification(notification);
     });
 
-    it('should do nothing when receiving unknown messages or notifications', () => {
+    it('should do nothing when receiving unknown messages, notifications or commands', () => {
         let message = { content: 'this looks odd' };
         let notification = { content: 'this looks odd' };
+        let command = { id: 'no_id_for_this' };
         this.client._clientChannel.onMessage(message);
         this.client._clientChannel.onNotification(notification);
+        this.client._clientChannel.onCommand(command);
     });
 
     it('should send messages', (done) => {
