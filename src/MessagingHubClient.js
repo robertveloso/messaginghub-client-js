@@ -1,11 +1,13 @@
 import {Lime} from 'lime-js';
 
+const identity = (x) => x;
+
 export default class MessagingHubClient {
 
     get uri() { return this._uri; }
 
     // MessagingHubClient :: String -> Transport? -> MessagingHubClient
-    constructor(uri, transport = new Lime.WebSocketTransport(true)) {
+    constructor(uri, transport) {
         this._uri = uri;
         this._transport = transport;
         this._clientChannel = new Lime.ClientChannel(this._transport);
@@ -16,16 +18,23 @@ export default class MessagingHubClient {
 
         this._clientChannel.onMessage = (m) => (this.messageReceivers[m.type] || []).map((f) => f(m));
         this._clientChannel.onNotification = (n) => (this.notificationReceivers[n.event] || []).map((f) => f(n));
-        this._clientChannel.onCommand = (c) => (this.commandReceivers[c.id] || ((x) => x))(c);
+        this._clientChannel.onCommand = (c) => (this.commandReceivers[c.id] || identity)(c);
     }
 
-    // connect :: String -> String -> (Error -> Session -> ()) -> ()
-    connect(user, password, callback) {
-        this._transport.onOpen = () => {
-            let authentication = new Lime.GuestAuthentication();
-            Lime.ClientChannelExtensions.establishSession(this._clientChannel, 'none', 'none', user, authentication, '', callback);
-        };
-        this._transport.open(this.uri);
+    // connect :: String -> String -> Promise Session
+    connect(user, password) {
+        return this._transport
+            .open(this.uri)
+            .then(() => {
+                let authentication;
+                if(password) {
+                    authentication = new Lime.PlainAuthentication();
+                    authentication.password = password;
+                } else {
+                    authentication = new Lime.GuestAuthentication();
+                }
+                return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, user, authentication, '');
+            });
     }
 
     // sendMessage :: Message -> ()
@@ -38,15 +47,15 @@ export default class MessagingHubClient {
         this._clientChannel.sendNotification(notification);
     }
 
-    // sendCommand :: Command -> (Command -> ()) -> ()
-    sendCommand(command, callback) {
-        if(callback) {
+    // sendCommand :: Command -> Promise Command
+    sendCommand(command) {
+        this._clientChannel.sendCommand(command);
+        return new Promise((resolve) => {
             this.commandReceivers[command.id] = (c) => {
-                callback(c);
+                resolve(c);
                 delete this.commandReceivers[command.id];
             };
-        }
-        this._clientChannel.sendCommand(command);
+        });
     }
 
     // addMessageReceiver :: String -> (Message -> ()) -> Function
