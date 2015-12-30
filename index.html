@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>messaginghub-client-js by takenet</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>messaginghub-client-js</h1>
+        <p>The Javascript SDK for the Messaging Hub portal</p>
+
+        <p class="view"><a href="https://github.com/takenet/messaginghub-client-js">View the Project on GitHub <small>takenet/messaginghub-client-js</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/takenet/messaginghub-client-js/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/takenet/messaginghub-client-js/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/takenet/messaginghub-client-js">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p><strong>This is a work in progress</strong></p>
+
+<p>A JS SDK Client for <a href="http://messaginghub.io/">Messaging Hub</a> to send and receive messages and notifications</p>
+
+<h2>
+<a id="how-to-use" class="anchor" href="#how-to-use" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to use</h2>
+
+<pre><code>npm i messaginghub-client
+</code></pre>
+
+<h3>
+<a id="instantiate-the-messaginghub-client" class="anchor" href="#instantiate-the-messaginghub-client" aria-hidden="true"><span class="octicon octicon-link"></span></a>Instantiate the MessagingHub Client</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> client <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">MessagingHubClient</span>();</pre></div>
+
+<h3>
+<a id="add-receivers" class="anchor" href="#add-receivers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add receivers</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">client</span>.<span class="pl-en">addMessageReceiver</span>(<span class="pl-s"><span class="pl-pds">"</span>application/json<span class="pl-pds">"</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">message</span>) {
+  <span class="pl-c">// do something</span>
+});
+
+<span class="pl-smi">client</span>.<span class="pl-en">addNotificationReceiver</span>(<span class="pl-s"><span class="pl-pds">"</span>message_received<span class="pl-pds">"</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">notification</span>) {
+  <span class="pl-c">// show something</span>
+});</pre></div>
+
+<h4>
+<a id="remove-receivers" class="anchor" href="#remove-receivers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Remove receivers</h4>
+
+<p>The client.addMessageReceiver and client.addNotificationReceiver methods return each a function which, when called, cancels the receiver subscription:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> removeJsonReceiver <span class="pl-k">=</span> <span class="pl-smi">client</span>.<span class="pl-en">addMessageReceiver</span>(<span class="pl-s"><span class="pl-pds">"</span>application/json<span class="pl-pds">"</span></span>, handleJson);
+<span class="pl-c">// ...</span>
+<span class="pl-en">removeJsonReceiver</span>();</pre></div>
+
+<h3>
+<a id="connect" class="anchor" href="#connect" aria-hidden="true"><span class="octicon octicon-link"></span></a>Connect</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">client</span>.<span class="pl-en">connect</span>(user, password, onConnect);</pre></div>
+
+<h3>
+<a id="send-messages" class="anchor" href="#send-messages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Send messages</h3>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">function</span> <span class="pl-en">onConnect</span>(<span class="pl-smi">err</span>, <span class="pl-smi">session</span>) {
+  <span class="pl-c">// send a message to some user</span>
+  <span class="pl-k">var</span> msg <span class="pl-k">=</span> { type<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>application/json<span class="pl-pds">"</span></span>, content<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>Hello, world<span class="pl-pds">"</span></span>, to<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>my@friend.com<span class="pl-pds">"</span></span> };
+  <span class="pl-smi">client</span>.<span class="pl-en">sendMessage</span>(msg);
+}</pre></div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/takenet">takenet</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
