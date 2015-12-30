@@ -18,8 +18,7 @@ node_js:
 before_install:
   - npm i -g npm@^2.0.0
   - docker build --tag="my-ws-mock" .
-  - docker ps -a
-  - docker run -t -i -p 2525:2525 -p 8010:8010 -p 8124:8124 --name='my-ws-mock' my-ws-mock
+  - docker run -ti -p 2525:2525 -p -p 8124:8124 --name='my-ws-mock' my-ws-mock
 
 before_script:
   - npm prune
