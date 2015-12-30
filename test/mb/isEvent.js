@@ -1,1 +1,4 @@
-function(request, logger) { return JSON.parse(request.data).hasOwnProperty('event'); }
+/* eslint-disable no-unused-vars */
+function isEvent(request) {
+    return JSON.parse(request.data).hasOwnProperty('event');
+}
