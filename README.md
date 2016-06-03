@@ -25,7 +25,27 @@ See more about Messaging Hub [here](http://messaginghub.io/)
 ### Instantiate the MessagingHub Client
 
 ```javascript
-var client = new MessagingHubClient();
+var client = new MessagingHubClient(uri, transport);
+
+// e.g.
+var client = new MessagingHubClient('ws://msging.net:8081', new Lime.WebSocketTransport());
+```
+
+### Connect
+
+```javascript
+client.connect(user, password).then(/* handle connection */);
+```
+
+### Send messages
+
+```javascript
+client.connect(user, password)
+    .then(function(session) {
+      // send a message to some user
+      var msg = { type: "application/json", content: "Hello, world", to: "my@friend.com" };
+      client.sendMessage(msg);
+    });
 ```
 
 ### Add receivers
@@ -35,7 +55,7 @@ client.addMessageReceiver("application/json", function(message) {
   // do something
 });
 
-client.addNotificationReceiver("message_received", function(notification) {
+client.addNotificationReceiver("received", function(notification) {
   // show something
 });
 ```
@@ -48,20 +68,4 @@ The client.addMessageReceiver and client.addNotificationReceiver methods return 
 var removeJsonReceiver = client.addMessageReceiver("application/json", handleJson);
 // ...
 removeJsonReceiver();
-```
-
-### Connect
-
-```javascript
-client.connect(user, password, onConnect);
-```
-
-### Send messages
-
-```javascript
-function onConnect(err, session) {
-  // send a message to some user
-  var msg = { type: "application/json", content: "Hello, world", to: "my@friend.com" };
-  client.sendMessage(msg);
-}
 ```
