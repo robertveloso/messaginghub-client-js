@@ -1,53 +1,48 @@
 'use strict';
 
 import net from 'net';
+import {Lime} from 'lime-js';
+import {Sessions, Commands, Messages, Notifications} from './TestEnvelopes';
 
 export default net.createServer((socket) => {
+
+    socket.writeJSON = (json) => socket.write(JSON.stringify(json));
+
     socket.on('data', (data) => {
         let envelope = JSON.parse(data);
-        // envelope.state? ==> is session
-        if(envelope.hasOwnProperty('state')) {
+
+        // Session
+        if(Lime.Envelope.isSession(envelope)) {
             switch(envelope.state) {
             case 'new':
-                socket.write(JSON.stringify({
-                    id: '0',
-                    from: '127.0.0.1:8124',
-                    state: 'authenticating'
-                }));
+                socket.writeJSON(Sessions.authenticating);
                 break;
             case 'authenticating':
-                socket.write(JSON.stringify({
-                    id: '0',
-                    from: '127.0.0.1:8124',
-                    state: 'established'
-                }));
+                socket.writeJSON(Sessions.established);
             }
         }
-        // envelope.method? ==> is command
-        else if(envelope.hasOwnProperty('method')) {
-            if(envelope.uri === '/ping') {
-                socket.write(JSON.stringify({
-                    id: envelope.id,
-                    method: 'get',
-                    status: 'success'
-                }));
+        // Command
+        else if(Lime.Envelope.isCommand(envelope)) {
+            switch(envelope.uri) {
+            case '/ping':
+                socket.writeJSON(Commands.pingResponse(envelope));
+                break;
             }
         }
-        // envelope.content? ==> is message
-        else if(envelope.hasOwnProperty('content')) {
-            if(envelope.content === 'ping') {
-                socket.write(JSON.stringify({
-                    type: 'text/plain',
-                    content: 'pong'
-                }));
+        // Message
+        else if(Lime.Envelope.isMessage(envelope)) {
+            switch(envelope.content) {
+            case 'ping':
+                socket.writeJSON(Messages.pong);
+                break;
             }
         }
-        // envelope.event? ==> is notification
-        else if(envelope.hasOwnProperty('event')) {
-            if(envelope.event === 'ping') {
-                socket.write(JSON.stringify({
-                    event: 'pong'
-                }));
+        // Notification
+        else if(Lime.Envelope.isNotification(envelope)) {
+            switch(envelope.event) {
+            case 'ping':
+                socket.writeJSON(Notifications.pong);
+                break;
             }
         }
     });

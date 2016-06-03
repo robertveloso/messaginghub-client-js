@@ -4,14 +4,24 @@
 
 import MessagingHubClient from '../src/MessagingHubClient';
 import TcpTransport from './helpers/TcpTransport';
+import TcpLimeServer from './helpers/TcpLimeServer';
 
 require('chai').should();
 
 describe('MessagingHubClient tests', function() {
 
-    it('should execute callback without error after connect', (done) => {
+    before((done) => {
+        this.server = TcpLimeServer.listen(8124, done);
+    });
+
+    it('should return a promise when connecting', (done) => {
         this.client = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
-        this.client.connect('', '', done);
+        this.client.connect('test', 't35t').then(() => done());
+    });
+
+    it('should connect with guest authentication', (done) => {
+        this.guest = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        this.guest.connect('guest').then(() => done());
     });
 
     it('should add and remove message listeners', () => {
@@ -83,11 +93,17 @@ describe('MessagingHubClient tests', function() {
     });
 
     it('should send commands and receive a response', (done) => {
-        this.client.sendCommand({ id: 'test', method: 'get', uri: '/ping' }, (c) => {
-            c.id.should.equal('test');
-            c.method.should.equal('get');
-            c.status.should.equal('success');
-            done();
-        });
+        this.client
+            .sendCommand({ id: 'test', method: 'get', uri: '/ping' })
+            .then((c) => {
+                c.id.should.equal('test');
+                c.method.should.equal('get');
+                c.status.should.equal('success');
+                done();
+            });
+    });
+
+    after(() => {
+        this.server.close();
     });
 });
