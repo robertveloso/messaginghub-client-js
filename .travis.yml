@@ -1,6 +1,4 @@
 sudo: required
-services:
-  - docker
 language: node_js
 cache:
   directories:
@@ -17,8 +15,6 @@ node_js:
   - '4'
 before_install:
   - npm i -g npm@^2.0.0
-  - docker build --tag="my-ws-mock" .
-  - docker run -ti -p 2525:2525 -p -p 8124:8124 --name='my-ws-mock' my-ws-mock
 
 before_script:
   - npm prune
