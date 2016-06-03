@@ -1,49 +1,72 @@
 'use strict';
 
 import net from 'net';
+import Promise from 'bluebird';
 import {Lime} from 'lime-js';
 import {Sessions, Commands, Messages, Notifications} from './TestEnvelopes';
 
-export default net.createServer((socket) => {
+export default class TcpLimeServer {
 
-    socket.writeJSON = (json) => socket.write(JSON.stringify(json));
+    constructor() {
+        this._server = net.createServer(this._onConnection.bind(this));
+        this._connections = [];
 
-    socket.on('data', (data) => {
-        let envelope = JSON.parse(data);
+        this.listen = Promise.promisify(this._server.listen, {context: this._server});
+        this.close = Promise.promisify(this._server.close, {context: this._server});
+    }
 
-        // Session
-        if(Lime.Envelope.isSession(envelope)) {
-            switch(envelope.state) {
-            case 'new':
-                socket.writeJSON(Sessions.authenticating);
-                break;
-            case 'authenticating':
-                socket.writeJSON(Sessions.established);
+    broadcast(envelope) {
+        this._connections = this._connections.filter((socket) => {
+            if(!socket.remoteAddress) {
+                return false;
             }
-        }
-        // Command
-        else if(Lime.Envelope.isCommand(envelope)) {
-            switch(envelope.uri) {
-            case '/ping':
-                socket.writeJSON(Commands.pingResponse(envelope));
-                break;
+            socket.writeJSON(envelope);
+            return true;
+        });
+    }
+
+    _onConnection(socket) {
+        socket.writeJSON = (json) => socket.write(JSON.stringify(json));
+
+        this._connections.push(socket);
+
+        socket.on('data', (data) => {
+            let envelope = JSON.parse(data);
+
+            // Session
+            if(Lime.Envelope.isSession(envelope)) {
+                switch(envelope.state) {
+                case 'new':
+                    socket.writeJSON(Sessions.authenticating);
+                    break;
+                case 'authenticating':
+                    socket.writeJSON(Sessions.established);
+                }
             }
-        }
-        // Message
-        else if(Lime.Envelope.isMessage(envelope)) {
-            switch(envelope.content) {
-            case 'ping':
-                socket.writeJSON(Messages.pong);
-                break;
+            // Command
+            else if(Lime.Envelope.isCommand(envelope)) {
+                switch(envelope.uri) {
+                case '/ping':
+                    socket.writeJSON(Commands.pingResponse(envelope));
+                    break;
+                }
             }
-        }
-        // Notification
-        else if(Lime.Envelope.isNotification(envelope)) {
-            switch(envelope.event) {
-            case 'ping':
-                socket.writeJSON(Notifications.pong);
-                break;
+            // Message
+            else if(Lime.Envelope.isMessage(envelope)) {
+                switch(envelope.content) {
+                case 'ping':
+                    socket.writeJSON(Messages.pong);
+                    break;
+                }
             }
-        }
-    });
-});
+            // Notification
+            else if(Lime.Envelope.isNotification(envelope)) {
+                switch(envelope.event) {
+                case 'ping':
+                    socket.writeJSON(Notifications.pong);
+                    break;
+                }
+            }
+        });
+    }
+}

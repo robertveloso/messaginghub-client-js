@@ -11,7 +11,8 @@ require('chai').should();
 describe('MessagingHubClient tests', function() {
 
     before((done) => {
-        this.server = TcpLimeServer.listen(8124, done);
+        this.server = new TcpLimeServer();
+        this.server.listen(8124).then(done);
     });
 
     it('should return a promise when connecting', (done) => {
@@ -49,27 +50,27 @@ describe('MessagingHubClient tests', function() {
     });
 
     it('should broadcast messages to message receivers', (done) => {
-        let message = { type: 'application/json', test: 'test' };
+        let message = { type: 'application/json', content: '{"test": true}' };
         this.client.addMessageReceiver('application/json', (m) => {
-            m.test.should.equal('test');
+            m.content.should.equal('{"test": true}');
             done();
         });
-        this.client._clientChannel.onMessage(message);
+        this.server.broadcast(message);
     });
 
     it('should broadcast notifications to notification receivers', (done) => {
-        let notification = { event: 'message_received', test: 'test' };
-        this.client.addNotificationReceiver('message_received', (n) => {
-            n.test.should.equal('test');
+        let notification = { event: 'received', metadata: 'test' };
+        this.client.addNotificationReceiver('received', (n) => {
+            n.metadata.should.equal('test');
             done();
         });
-        this.client._clientChannel.onNotification(notification);
+        this.server.broadcast(notification);
     });
 
     it('should do nothing when receiving unknown messages, notifications or commands', () => {
-        let message = { content: 'this looks odd' };
-        let notification = { content: 'this looks odd' };
-        let command = { id: 'no_id_for_this' };
+        let message = { type: 'application/unknown', content: 'this looks odd' };
+        let notification = { event: 'consumed', content: 'this looks odd' };
+        let command = { id: 'no_id_for_this', method: 'get' };
         this.client._clientChannel.onMessage(message);
         this.client._clientChannel.onNotification(notification);
         this.client._clientChannel.onCommand(command);
