@@ -18,7 +18,6 @@ before_install:
 
 before_script:
   - npm prune
-  - npm run test:serve
 script:
   - npm run lint
   - npm run test:single
