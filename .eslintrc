@@ -1,4 +1,4 @@
-module.exports = {
+{
     'parser': 'babel-eslint',
     'rules': {
         'indent': [2, 4],
@@ -15,4 +15,4 @@ module.exports = {
         'node': true
     },
     'extends': 'eslint:recommended'
-};
+}

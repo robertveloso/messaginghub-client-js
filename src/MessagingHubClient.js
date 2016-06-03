@@ -1,45 +1,71 @@
 import {Lime} from 'lime-js';
 
+const identity = (x) => x;
+
 export default class MessagingHubClient {
 
     get uri() { return this._uri; }
 
-    constructor(uri, transport = new Lime.WebSocketTransport(true)) {
+    // MessagingHubClient :: String -> Transport? -> MessagingHubClient
+    constructor(uri, transport) {
         this._uri = uri;
         this._transport = transport;
         this._clientChannel = new Lime.ClientChannel(this._transport);
+
         this.messageReceivers = {};
         this.notificationReceivers = {};
+        this.commandReceivers = {};
+
         this._clientChannel.onMessage = (m) => (this.messageReceivers[m.type] || []).map((f) => f(m));
         this._clientChannel.onNotification = (n) => (this.notificationReceivers[n.event] || []).map((f) => f(n));
+        this._clientChannel.onCommand = (c) => (this.commandReceivers[c.id] || identity)(c);
     }
 
-    connect(user, password, callback) {
-        this._transport.onOpen = () => {
-            let authentication = new Lime.GuestAuthentication();
-            Lime.ClientChannelExtensions.establishSession(this._clientChannel, 'none', 'none', user, authentication, '', callback);
-        };
-        this._transport.open(this.uri);
+    // connect :: String -> String -> Promise Session
+    connect(user, password) {
+        return this._transport
+            .open(this.uri)
+            .then(() => {
+                let authentication;
+                if(password) {
+                    authentication = new Lime.PlainAuthentication();
+                    authentication.password = password;
+                } else {
+                    authentication = new Lime.GuestAuthentication();
+                }
+                return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, user, authentication, '');
+            });
     }
 
+    // sendMessage :: Message -> ()
     sendMessage(message) {
         this._clientChannel.sendMessage(message);
     }
 
+    // sendNotification :: Notification -> ()
     sendNotification(notification) {
         this._clientChannel.sendNotification(notification);
     }
 
+    // sendCommand :: Command -> Promise Command
     sendCommand(command) {
         this._clientChannel.sendCommand(command);
+        return new Promise((resolve) => {
+            this.commandReceivers[command.id] = (c) => {
+                resolve(c);
+                delete this.commandReceivers[command.id];
+            };
+        });
     }
 
+    // addMessageReceiver :: String -> (Message -> ()) -> Function
     addMessageReceiver(type, receiver) {
         this.messageReceivers[type] = this.messageReceivers[type] || [];
         this.messageReceivers[type].push(receiver);
         return () => this.messageReceivers[type] = this.messageReceivers[type].filter((r) => r !== receiver);
     }
 
+    // addNotificationReceiver :: String -> (Notification -> ()) -> Function
     addNotificationReceiver(event, receiver) {
         this.notificationReceivers[event] = this.notificationReceivers[event] || [];
         this.notificationReceivers[event].push(receiver);

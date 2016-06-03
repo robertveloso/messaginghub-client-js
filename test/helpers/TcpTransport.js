@@ -1,9 +1,10 @@
-"use strict";
+'use strict';
 
 import net from 'net';
 import {Lime} from 'lime-js';
+import Promise from 'bluebird';
 
-console.debug = console.debug || console.log;
+var logger = console.debug || console.log; // eslint-disable-line no-console
 
 export default class TcpTransport {
 
@@ -13,7 +14,7 @@ export default class TcpTransport {
         this._socket.on('close', this.onClose);
         this._socket.on('data', (e) => {
             if (this._traceEnabled) {
-                console.debug("TcpTransport RECEIVE: " + e);
+                logger('TcpTransport RECEIVE: ' + e);
             }
             this.onEnvelope(JSON.parse(e));
         });
@@ -23,38 +24,42 @@ export default class TcpTransport {
         var envelopeString = JSON.stringify(envelope);
         this._socket.write(envelopeString);
         if (this._traceEnabled) {
-            console.debug("TcpTransport SEND: " + envelopeString);
+            logger('TcpTransport SEND: ' + envelopeString);
         }
     }
 
-    onEnvelope(envelope) { }
+    onEnvelope() { }
 
     open(uri) {
-        var host = uri.split(':');
         this.encryption = Lime.SessionEncryption.none;
         this.compression = Lime.SessionCompression.none;
-        this._socket.connect(host[1], host[0], this.onOpen);
+
+        return new Promise((resolve) => {
+            let host = uri.split(':');
+            this._socket.connect(host[1], host[0], () => {
+                resolve();
+                this.onOpen();
+            });
+        });
     }
 
     close() {
+        let promise = new Promise((resolve) => this._socket.on('close', resolve));
         this._socket.end();
+        return promise;
     }
 
     getSupportedCompression() {
-        throw new Error("Compression change is not supported");
+        throw new Error('Compression change is not supported');
     }
+    setCompression() {}
 
     getSupportedEncryption() {
-        throw new Error("Encryption change is not supported");
+        throw new Error('Encryption change is not supported');
     }
-
-    setCompression(compression) {}
-
-    setEncryption(encryption) {}
+    setEncryption() {}
 
     onOpen() {}
-
     onClose() {}
-
-    onError(error) {}
+    onError() {}
 }

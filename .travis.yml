@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 language: node_js
 cache:
   directories:
@@ -15,12 +15,16 @@ node_js:
   - '4'
 before_install:
   - npm i -g npm@^2.0.0
+
 before_script:
   - npm prune
+  - npm run test:serve
 script:
   - npm run lint
-  - npm run bundle
   - npm run test:single
+  - npm run test:check-coverage
+  - npm run test:upload-coverage
+  - npm run bundle
 after_success:
   - npm run semantic-release
 branches:
