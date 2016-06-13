@@ -1,7 +1,8 @@
 {
   "name": "messaginghub-client",
   "description": "Simple messaging mub client.",
-  "main": "hub.js",
+  "main": "dist/hub.js",
+  "files": ["dist/hub.js"],
   "scripts": {
     "commit": "./node_modules/.bin/git-cz",
     "prebundle": "rm -rf dist && mkdir dist",
