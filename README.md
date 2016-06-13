@@ -19,11 +19,21 @@
 See more about Messaging Hub [here](http://messaginghub.io/)
 
 ## How to use
+If you are using node.js (or webpack), simply install the `messaginghub-client` package from the npm registry.
 
-    npm i messaginghub-client
+    npm install --save messaginghub-client
+
+However, if you're using vanilla JavaScript, you can install the package via npm and then include the distribution script in your file like this:
+```html
+<script src="./node_modules/messaginghub-client/dist/hub.js" type="text/javascript"></script>
+```
+
+Or you can also use the script served by [npmcdn](https://npmcdn.com):
+```html
+<script src="https://npmcdn.com/messaginghub-client" type="text/javascript"></script>
+```
 
 ### Instantiate the MessagingHub Client
-
 ```javascript
 var client = new MessagingHubClient(uri, transport);
 
@@ -32,13 +42,17 @@ var client = new MessagingHubClient('ws://msging.net:8081', new Lime.WebSocketTr
 ```
 
 ### Connect
-
 ```javascript
 client.connect(user, password).then(/* handle connection */);
 ```
 
-### Send messages
+### Sending
+In order to ensure a connection is available and have no runtime exceptions,
+one must send messages only after the connection has been established, that is,
+all sending logic must be written inside the promise handler for the connection method,
+as shown in the examples below:
 
+#### Sending messages
 ```javascript
 client.connect(user, password)
     .then(function(session) {
@@ -48,8 +62,28 @@ client.connect(user, password)
     });
 ```
 
-### Add receivers
+#### Sending notifications
+```javascript
+client.connect(user, password)
+    .then(function(session) {
+      // send a "received" notification to some user
+      var notification = { to: "my@friend.com", event: Lime.NotificationEvent.RECEIVED };
+      client.sendNotification(notification);
+    });
+```
 
+#### Sending commands
+```javascript
+client.connect(user, password)
+    .then(function(session) {
+      // send a message to some user
+      var command = { uri: "/ping", method: Lime.CommandMethod.GET };
+      client.sendCommand(command);
+    });
+```
+
+### Receiving
+#### Add receivers
 ```javascript
 client.addMessageReceiver("application/json", function(message) {
   // do something
@@ -61,11 +95,21 @@ client.addNotificationReceiver("received", function(notification) {
 ```
 
 #### Remove receivers
-
 The client.addMessageReceiver and client.addNotificationReceiver methods return each a function which, when called, cancels the receiver subscription:
 
 ```javascript
 var removeJsonReceiver = client.addMessageReceiver("application/json", handleJson);
 // ...
 removeJsonReceiver();
+```
+
+#### Receiving command answers
+Unlike messages and notifications, when command is sent, the response is received when the promise is complete. This response will contain information about the result of the execution of the command sent.
+
+```javascript
+var command = { uri: "/ping", method: Lime.CommandMethod.GET };
+client.sendCommand(command)
+    .then(function(response) {
+        // handle command repsonse
+    });
 ```
