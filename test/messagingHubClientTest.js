@@ -25,6 +25,10 @@ describe('MessagingHubClient tests', function() {
         this.guest.connect('guest').then(() => done());
     });
 
+    it('should close connections without errors', (done) => {
+        this.guest.close().then(() => done());
+    });
+
     it('should add and remove message listeners', () => {
         let f = () => undefined;
         let g = (x) => x;
@@ -105,6 +109,7 @@ describe('MessagingHubClient tests', function() {
     });
 
     after(() => {
+        this.client.close();
         this.server.close();
     });
 });
