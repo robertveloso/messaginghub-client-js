@@ -14,8 +14,9 @@ export default class TcpTransport {
         this._socket.on('close', this.onClose);
         this._socket.on('data', (e) => {
             if (this._traceEnabled) {
-                logger('TcpTransport RECEIVE: ' + e);
+                logger('TcpTransport RECEIVE: ' + e.toString());
             }
+            console.log(e.toString());
             this.onEnvelope(JSON.parse(e.toString()));
         });
     }
