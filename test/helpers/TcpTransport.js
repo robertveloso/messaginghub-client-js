@@ -16,7 +16,7 @@ export default class TcpTransport {
             if (this._traceEnabled) {
                 logger('TcpTransport RECEIVE: ' + e);
             }
-            this.onEnvelope(JSON.parse(e));
+            this.onEnvelope(JSON.parse(e.toString()));
         });
     }
 
