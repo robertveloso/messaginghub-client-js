@@ -16,7 +16,6 @@ export default class TcpTransport {
             if (this._traceEnabled) {
                 logger('TcpTransport RECEIVE: ' + e.toString());
             }
-            console.log(e.toString()); // eslint-disable-line no-console
             this.onEnvelope(JSON.parse(e.toString()));
         });
     }
