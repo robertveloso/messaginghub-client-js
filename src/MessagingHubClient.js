@@ -37,6 +37,11 @@ export default class MessagingHubClient {
             });
     }
 
+    // close :: Promise ()
+    close() {
+        return this._transport.close();
+    }
+
     // sendMessage :: Message -> ()
     sendMessage(message) {
         this._clientChannel.sendMessage(message);
