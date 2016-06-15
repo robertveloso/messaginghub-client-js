@@ -1,8 +1,10 @@
 {
   "name": "messaginghub-client",
   "description": "Simple messaging mub client.",
-  "main": "dist/hub.js",
-  "files": ["dist/hub.js"],
+  "main": "dist/messaginghub-client.js",
+  "files": [
+    "dist/messaginghub-client.js"
+  ],
   "scripts": {
     "commit": "./node_modules/.bin/git-cz",
     "prebundle": "rm -rf dist && mkdir dist",
@@ -31,6 +33,7 @@
     "babel-eslint": "^4.1.6",
     "babel-istanbul": "^0.5.9",
     "babel-loader": "^6.2.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-es2015": "^6.3.13",
     "chai": "^3.4.1",
     "codecov.io": "^0.1.6",
@@ -45,7 +48,7 @@
   },
   "dependencies": {
     "bluebird": "^3.4.0",
-    "lime-js": "^1.0.1"
+    "lime-js": "^2.0.1"
   },
   "config": {
     "commitizen": {

@@ -1,4 +1,4 @@
-import {Lime} from 'lime-js';
+import Lime from 'lime-js';
 
 const identity = (x) => x;
 

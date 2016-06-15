@@ -1,9 +1,15 @@
 module.exports = {
     context: __dirname + '/src',
     entry: './MessagingHubClient.js',
+    externals: {
+        'lime-js': 'Lime',
+        'bluebird': 'bluebird'
+    },
     output: {
         path: __dirname + '/dist',
-        filename: 'hub.js'
+        filename: 'messaginghub-client.js',
+        library: 'MessagingHubClient',
+        libraryTarget: 'umd'
     },
     module: {
         preLoaders: [

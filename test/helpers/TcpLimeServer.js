@@ -2,7 +2,7 @@
 
 import net from 'net';
 import Promise from 'bluebird';
-import {Lime} from 'lime-js';
+import Lime from 'lime-js';
 import {Sessions, Commands, Messages, Notifications} from './TestEnvelopes';
 
 export default class TcpLimeServer {

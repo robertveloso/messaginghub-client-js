@@ -1,7 +1,7 @@
 'use strict';
 
 import net from 'net';
-import {Lime} from 'lime-js';
+import Lime from 'lime-js';
 import Promise from 'bluebird';
 
 var logger = console.debug || console.log; // eslint-disable-line no-console
