@@ -31,7 +31,7 @@ However, if you're building for the browser and using vanilla JavaScript, you ca
 
 Or you can also use the script served by [npmcdn](https://npmcdn.com):
 ```html
-<script src="https://npmcdn.com/lime-js" type="text/javascript"></script>
+<script src="https://npmcdn.com/lime-js@latest" type="text/javascript"></script>
 <script src="https://npmcdn.com/messaginghub-client" type="text/javascript"></script>
 ```
 
