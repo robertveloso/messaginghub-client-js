@@ -2,8 +2,18 @@ module.exports = {
     context: __dirname + '/src',
     entry: './MessagingHubClient.js',
     externals: {
-        'lime-js': 'Lime',
-        'bluebird': 'bluebird'
+        'lime-js': {
+            root: 'Lime',
+            commonjs2: 'lime-js',
+            commonjs: 'lime-js',
+            amd: 'Lime'
+        },
+        'bluebird': {
+            root: 'Promise',
+            commonjs2: 'bluebird',
+            commonjs: 'bluebird',
+            amd: 'Promise'
+        }
     },
     output: {
         path: __dirname + '/dist',
