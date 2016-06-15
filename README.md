@@ -23,13 +23,15 @@ If you are using node.js (or webpack), simply install the `messaginghub-client` 
 
     npm install --save messaginghub-client
 
-However, if you're using vanilla JavaScript, you can install the package via npm and then include the distribution script in your file like this:
+However, if you're building for the browser and using vanilla JavaScript, you can install the package via npm and then include the distribution script via a `<script>` tag. Note also, that in order to use `messaginghub-client` with this setting you must also install and use the `lime-js` library:
 ```html
-<script src="./node_modules/messaginghub-client/dist/hub.js" type="text/javascript"></script>
+<script src="./node_modules/lime-js/dist/lime.js" type="text/javascript"></script>
+<script src="./node_modules/messaginghub-client/dist/messaginghub-client.js" type="text/javascript"></script>
 ```
 
 Or you can also use the script served by [npmcdn](https://npmcdn.com):
 ```html
+<script src="https://npmcdn.com/lime-js" type="text/javascript"></script>
 <script src="https://npmcdn.com/messaginghub-client" type="text/javascript"></script>
 ```
 
