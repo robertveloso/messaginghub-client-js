@@ -7,7 +7,8 @@
   var connectButton = document.getElementById("connect-button");
   var disconnectButton = document.getElementById("disconnect-button");
   var messageSendButton = document.getElementById("message-send-button");
-  
+  var pingButton = document.getElementById("ping-button");
+
   // input elements for connection
   var identityInput = document.getElementById("identity-input");
   var passwordInput = document.getElementById("password-input");
@@ -86,4 +87,21 @@
       messagingHubClient.sendMessage(message);
       utils.logLimeMessage(message, "Message sent");
   }
+
+  window.ping = function(){
+    var pingCommand = { 
+      id: utils.newGuid(),
+      uri: "/ping",
+      method: "get"
+    }
+
+    messagingHubClient.sendCommand(pingCommand)
+       .then(function(commandResponse) 
+       { 
+         utils.logLimeCommand(pingCommand, "Ping sent");
+         utils.logLimeCommand(commandResponse, "Ping response"); 
+      })
+      .catch(function(err) {utils.logMessage("An error occurred: " + err);});
+  }
+
 })(this);

@@ -37,4 +37,8 @@
    utils.logMessage(event + "- From: " + notification.from + " - To: " + notification.to + " - Event: " + notification.event + " - Reason: " + notification.reason);
  }
 
+utils.logLimeCommand = function(command, event){
+   utils.logMessage(event + "- From: " + command.from + " - To: " + command.to + " - Method: " + command.method + " - Uri: " + command.uri + " - Status: " + command.status);
+ }
+
 })(this);
