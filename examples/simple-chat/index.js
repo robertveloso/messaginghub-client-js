@@ -1,5 +1,5 @@
 /* eslint-env browser */
-/* global Lime */
+/* global WebSocketTransport */
 /* global MessagingHubClient */
 /* global utils */
 (function(window) {
@@ -16,7 +16,10 @@
     // input elements for messages
     var messageToInput = document.getElementById('message-to-input');
     var messageContentInput = document.getElementById('message-content-input');
-
+    // input elements for notifications
+    var notificationIdInput = document.getElementById('notification-id-input');
+    var notificationToInput = document.getElementById('notification-to-input');
+    var notificationEventInput = document.getElementById('notification-event-input');
     //var clientChannel;
     var messagingHubClient;
     var identity;
@@ -24,7 +27,7 @@
     var uri;
 
     function createClient(uri, identity, password){
-        messagingHubClient = new MessagingHubClient(uri, new Lime.WebSocketTransport(true));
+        messagingHubClient = new MessagingHubClient(uri, new WebSocketTransport(true));
         messagingHubClient.connect(identity, btoa(password))
         .then(setConnectedState)
         .catch(function(err) {utils.logMessage('An error occurred: ' + err); return; });
@@ -84,6 +87,17 @@
 
         messagingHubClient.sendMessage(message);
         utils.logLimeMessage(message, 'Message sent');
+    };
+
+    window.sendNotification = function () {
+        var notification = {
+            id: notificationIdInput.value,
+            to: notificationToInput.value,
+            event: notificationEventInput.value
+        };
+
+        messagingHubClient.sendNotification(notification);
+        utils.logLimeNotification(notification, 'Notification sent');
     };
 
     window.ping = function(){

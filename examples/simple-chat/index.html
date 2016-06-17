@@ -35,6 +35,24 @@
     <div>
         <button id="message-send-button" onclick="sendMessage()">Send message</button>
     </div>
+
+    <div>
+        <label for="notification-id-input">Id:</label>
+        <input type="text" id="notification-id-input" />
+    </div>
+    <div>
+        <label for="notification-to-input">To:</label>
+        <input type="text" id="notification-to-input" />
+    </div>
+    <div>
+        <label for="notification-event-input">Event:</label>
+        <input type="text" id="notification-event-input" />
+    </div>
+    <div>
+        <button id="notification-send-button" onclick="sendNotification()">Send Notification</button>
+    </div>
+    <div>
+
     <div>
         <button id="ping-button" onclick="ping()">Ping</button>
     </div>
@@ -44,6 +62,7 @@
     </div>
     
     <script src="https://npmcdn.com/lime-js" type="text/javascript"></script>
+    <script src="https://npmcdn.com/lime-transport-websocket" type="text/javascript"></script>
     <script src="https://npmcdn.com/messaginghub-client" type="text/javascript"></script>
     <script type="text/javascript" src="utils.js"></script>
     <script type="text/javascript" src="index.js"></script>
