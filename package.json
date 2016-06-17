@@ -47,6 +47,7 @@
     "webpack": "^1.12.9"
   },
   "dependencies": {
+    "base64-js": "^1.1.2",
     "bluebird": "^3.4.0",
     "lime-js": "^2.0.1"
   },

@@ -15,18 +15,18 @@ describe('MessagingHubClient tests', function() {
         this.server.listen(8124).then(done);
     });
 
-    it('should return a promise when connecting', (done) => {
-        this.client = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
-        this.client.connect('test', 't35t').then(() => done());
-    });
-
-    it('should connect with guest authentication', (done) => {
+    it('should connect with guest authentication returning a promise', (done) => {
         this.guest = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
         this.guest.connect('guest').then(() => done());
     });
 
     it('should close connections without errors', (done) => {
         this.guest.close().then(() => done());
+    });
+
+    it('should connect with plain authentication converting to a base64 password', (done) => {
+        this.client = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        this.client.connect('test', 't35t64').then(() => done());
     });
 
     it('should add and remove message listeners', () => {

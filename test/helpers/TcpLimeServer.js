@@ -5,6 +5,8 @@ import Promise from 'bluebird';
 import Lime from 'lime-js';
 import {Sessions, Commands, Messages, Notifications} from './TestEnvelopes';
 
+const isBase64 = (s) => !!s.match(/^(?:[A-Z0-9+\/]{4})*(?:[A-Z0-9+\/]{2}==|[A-Z0-9+\/]{3}=|[A-Z0-9+\/]{4})$/i);
+
 export default class TcpLimeServer {
 
     constructor() {
@@ -40,6 +42,9 @@ export default class TcpLimeServer {
                     socket.writeJSON(Sessions.authenticating);
                     break;
                 case 'authenticating':
+                    if (envelope.authentication.scheme === 'plain' && !isBase64(envelope.authentication.password)) {
+                        throw new Error('Invalid password');
+                    }
                     socket.writeJSON(Sessions.established);
                 }
             }

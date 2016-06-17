@@ -1,4 +1,5 @@
 import Lime from 'lime-js';
+import base64 from 'base64-js';
 
 const identity = (x) => x;
 
@@ -29,7 +30,7 @@ export default class MessagingHubClient {
                 let authentication;
                 if(password) {
                     authentication = new Lime.PlainAuthentication();
-                    authentication.password = password;
+                    authentication.password = base64.fromByteArray(password);
                 } else {
                     authentication = new Lime.GuestAuthentication();
                 }
