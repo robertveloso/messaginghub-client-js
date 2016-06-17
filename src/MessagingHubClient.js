@@ -13,13 +13,17 @@ export default class MessagingHubClient {
         this._transport = transport;
         this._clientChannel = new Lime.ClientChannel(this._transport);
 
-        this.messageReceivers = {};
-        this.notificationReceivers = {};
-        this.commandReceivers = {};
+        this._messageReceivers = [];
+        this._notificationReceivers = [];
+        this._commandResolves = {};
 
-        this._clientChannel.onMessage = (m) => (this.messageReceivers[m.type] || []).map((f) => f(m));
-        this._clientChannel.onNotification = (n) => (this.notificationReceivers[n.event] || []).map((f) => f(n));
-        this._clientChannel.onCommand = (c) => (this.commandReceivers[c.id] || identity)(c);
+        this._clientChannel.onMessage = (message) =>
+            this._messageReceivers
+                .forEach((receiver) => receiver.predicate(message) && receiver.callback(message));
+        this._clientChannel.onNotification = (notification) =>
+            this._notificationReceivers
+                .forEach((receiver) => receiver.predicate(notification) && receiver.callback(notification));
+        this._clientChannel.onCommand = (c) => (this._commandResolves[c.id] || identity)(c);
     }
 
     // connect :: String -> String -> Promise Session
@@ -40,7 +44,7 @@ export default class MessagingHubClient {
 
     // close :: Promise ()
     close() {
-        return this._transport.close();
+        return this._clientChannel.sendFinishingSession();
     }
 
     // sendMessage :: Message -> ()
@@ -57,24 +61,46 @@ export default class MessagingHubClient {
     sendCommand(command) {
         this._clientChannel.sendCommand(command);
         return new Promise((resolve) => {
-            this.commandReceivers[command.id] = (c) => {
+            this._commandResolves[command.id] = (c) => {
                 resolve(c);
-                delete this.commandReceivers[command.id];
+                delete this._commandResolves[command.id];
             };
         });
     }
 
     // addMessageReceiver :: String -> (Message -> ()) -> Function
-    addMessageReceiver(type, receiver) {
-        this.messageReceivers[type] = this.messageReceivers[type] || [];
-        this.messageReceivers[type].push(receiver);
-        return () => this.messageReceivers[type] = this.messageReceivers[type].filter((r) => r !== receiver);
+    addMessageReceiver(predicate, callback) {
+        if (typeof predicate !== 'function') {
+            if (predicate === true || !predicate) {
+                predicate = () => true;
+            } else {
+                const value = predicate;
+                predicate = (message) => message.type === value;
+            }
+        }
+        this._messageReceivers.push({ predicate, callback });
+        return () => this._messageReceivers = this._messageReceivers.filter((r) => r.predicate !== predicate && r.callback !== callback);
+    }
+
+    clearMessageReceivers() {
+        this._messageReceivers = [];
     }
 
     // addNotificationReceiver :: String -> (Notification -> ()) -> Function
-    addNotificationReceiver(event, receiver) {
-        this.notificationReceivers[event] = this.notificationReceivers[event] || [];
-        this.notificationReceivers[event].push(receiver);
-        return () => this.notificationReceivers[event] = this.notificationReceivers[event].filter((r) => r !== receiver);
+    addNotificationReceiver(predicate, callback) {
+        if (typeof predicate !== 'function') {
+            if (predicate === true || !predicate) {
+                predicate = () => true;
+            } else {
+                const value = predicate;
+                predicate = (notification) => notification.event === value;
+            }
+        }
+        this._notificationReceivers.push({ predicate, callback });
+        return () => this._notificationReceivers = this._notificationReceivers.filter((r) => r.predicate !== predicate && r.callback !== callback);
+    }
+
+    clearNotificationReceivers() {
+        this._notificationReceivers = [];
     }
 }
