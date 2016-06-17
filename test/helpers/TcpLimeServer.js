@@ -46,6 +46,10 @@ export default class TcpLimeServer {
                         throw new Error('Invalid password');
                     }
                     socket.writeJSON(Sessions.established);
+                    break;
+                case 'finishing':
+                    socket.writeJSON(Sessions.finished);
+                    break;
                 }
             }
             // Command

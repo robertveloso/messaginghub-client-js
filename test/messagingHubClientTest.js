@@ -16,12 +16,18 @@ describe('MessagingHubClient tests', function() {
     });
 
     it('should connect with guest authentication returning a promise', (done) => {
-        this.guest = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        this.guestTransport = new TcpTransport();
+        this.guest = new MessagingHubClient('127.0.0.1:8124', this.guestTransport);
         this.guest.connect('guest').then(() => done());
     });
 
     it('should close connections without errors', (done) => {
         this.guest.close().then(() => done());
+    });
+
+    it('should close transport after closing connection', () => {
+        this.guestTransport.send.bind(this.guestTransport, { type: 'text/plain', content: 'test' })
+            .should.throw(Error);
     });
 
     it('should connect with plain authentication converting to a base64 password', (done) => {
@@ -32,43 +38,70 @@ describe('MessagingHubClient tests', function() {
     it('should add and remove message listeners', () => {
         let f = () => undefined;
         let g = (x) => x;
+
         let remove_f = this.client.addMessageReceiver('application/json', f);
         let remove_g = this.client.addMessageReceiver('application/json', g);
-        this.client.messageReceivers['application/json'].should.eql([f, g]);
+
+        this.client._messageReceivers[0].callback.should.eql(f);
+        this.client._messageReceivers[1].callback.should.eql(g);
         remove_f();
-        this.client.messageReceivers['application/json'].should.eql([g]);
+        this.client._messageReceivers[0].callback.should.eql(g);
         remove_g();
-        this.client.messageReceivers['application/json'].should.eql([]);
+        this.client._messageReceivers.should.eql([]);
     });
 
     it('should add and remove notification listeners', () => {
         let f = () => undefined;
         let g = (x) => x;
-        let remove_f = this.client.addNotificationReceiver('message_received', f);
-        let remove_g = this.client.addNotificationReceiver('message_received', g);
-        this.client.notificationReceivers['message_received'].should.eql([f, g]);
+        let remove_f = this.client.addNotificationReceiver('received', f);
+        let remove_g = this.client.addNotificationReceiver('received', g);
+
+        this.client._notificationReceivers[0].callback.should.eql(f);
+        this.client._notificationReceivers[1].callback.should.eql(g);
         remove_f();
-        this.client.notificationReceivers['message_received'].should.eql([g]);
+        this.client._notificationReceivers[0].callback.should.eql(g);
         remove_g();
-        this.client.notificationReceivers['message_received'].should.eql([]);
+        this.client._notificationReceivers.should.eql([]);
     });
 
-    it('should broadcast messages to message receivers', (done) => {
-        let message = { type: 'application/json', content: '{"test": true}' };
-        this.client.addMessageReceiver('application/json', (m) => {
-            m.content.should.equal('{"test": true}');
-            done();
+    it('should call receivers predicates with the received envelope', (done) => {
+        this.client.addMessageReceiver((message) => {
+            message.type.should.equal('text/plain');
+            message.content.should.equal('test');
+            return true;
+        }, () => {
+            this.client.addNotificationReceiver((message) => {
+                message.event.should.equal('received');
+                return true;
+            }, () => {
+                this.client.clearMessageReceivers();
+                this.client.clearNotificationReceivers();
+                done();
+            });
+            this.server.broadcast({ event: 'received' });
         });
-        this.server.broadcast(message);
+
+        this.server.broadcast({ type: 'text/plain', content: 'test' });
     });
 
-    it('should broadcast notifications to notification receivers', (done) => {
-        let notification = { event: 'received', metadata: 'test' };
-        this.client.addNotificationReceiver('received', (n) => {
-            n.metadata.should.equal('test');
-            done();
+    it('should create predicate functions from non-function values', (done) => {
+        this.client.addMessageReceiver(null, () => {
+            this.client.clearMessageReceivers();
+            this.client.addNotificationReceiver(null, () => {
+                this.client.clearNotificationReceivers();
+                this.client.addMessageReceiver('text/plain', () => {
+                    this.client.clearMessageReceivers();
+                    this.client.addNotificationReceiver('received', () => {
+                        this.client.clearNotificationReceivers();
+                        done();
+                    });
+                    this.server.broadcast({ event: 'received' });
+                });
+                this.server.broadcast({ type: 'text/plain', content: 'test' });
+            });
+            this.server.broadcast({ event: 'received' });
         });
-        this.server.broadcast(notification);
+        this.server.broadcast({ type: 'text/plain', content: 'test' });
     });
 
     it('should do nothing when receiving unknown messages, notifications or commands', () => {

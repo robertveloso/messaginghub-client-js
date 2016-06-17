@@ -8,6 +8,11 @@ export const Sessions = {
         id: '0',
         from: '127.0.0.1:8124',
         state: 'established'
+    },
+    finished: {
+        id: '0',
+        from: '127.0.0.1:8124',
+        state: 'finished'
     }
 };
 export const Commands = {
