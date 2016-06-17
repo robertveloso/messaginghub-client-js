@@ -39,6 +39,18 @@ export default class MessagingHubClient {
                     authentication = new Lime.GuestAuthentication();
                 }
                 return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, user, authentication, '');
+            })
+            .then((session) => {
+                // TODO: use default Lime solution for Presences when available
+                return this.sendCommand({
+                    id: Lime.Guid(),
+                    method: Lime.CommandMethod.SET,
+                    uri: '/presence',
+                    type: 'application/vnd.lime.presence+json',
+                    resource: {
+                        status: 'available'
+                    }
+                }).then(() => session);
             });
     }
 
