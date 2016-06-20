@@ -11,7 +11,7 @@ export default class MessagingHubClient {
     constructor(uri, transport) {
         this._uri = uri;
         this._transport = transport;
-        this._clientChannel = new Lime.ClientChannel(this._transport);
+        this._clientChannel = new Lime.ClientChannel(this._transport, true, true);
 
         this._messageReceivers = [];
         this._notificationReceivers = [];
