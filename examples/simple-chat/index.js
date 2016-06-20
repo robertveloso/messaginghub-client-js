@@ -32,19 +32,11 @@
         .then(setConnectedState)
         .catch(function(err) {utils.logMessage('An error occurred: ' + err); return; });
 
-        messagingHubClient.addMessageReceiver('application/json', function(message) {
+        messagingHubClient.addMessageReceiver(null, function(message) {
             utils.logLimeMessage(message, 'Message received');
         });
 
-        messagingHubClient.addNotificationReceiver('received', function(notification) {
-            utils.logLimeNotification(notification, 'Notification received');
-        });
-
-        messagingHubClient.addNotificationReceiver('dispatched', function(notification) {
-            utils.logLimeNotification(notification, 'Notification received');
-        });
-
-        messagingHubClient.addNotificationReceiver('consumed', function(notification) {
+        messagingHubClient.addNotificationReceiver(null, function(notification) {
             utils.logLimeNotification(notification, 'Notification received');
         });
     }
