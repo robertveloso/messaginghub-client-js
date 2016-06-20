@@ -3,16 +3,6 @@
 
     var utils = window.utils || {};
 
-    utils.newGuid = function() {
-        var d = new Date().getTime();
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = (d + Math.random() * 16) % 16 | 0;
-            d = Math.floor(d / 16);
-            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-        return uuid;
-    };
-
     utils.checkMandatoryInput = function(input) {
         if(!input.value) {
             throw new Error('The input element ' + input.id + ' is mandatory.');
@@ -30,16 +20,16 @@
         logTextarea.value = log;
     };
 
-    utils.logLimeMessage = function(message, event){
-        utils.logMessage(event + '- From: ' + message.from + ' - To: ' + message.to + ' - Content: ' + JSON.stringify(message.content));
+    utils.logLimeMessage = function(message, event) {
+        utils.logMessage(event + '\nId: ' + message.id + '\nFrom: ' + message.from + '\nTo: ' + message.to + '\nContent: ' + JSON.stringify(message.content) + '\n\n');
     };
 
-    utils.logLimeNotification = function(notification, event){
-        utils.logMessage(event + '- From: ' + notification.from + ' - To: ' + notification.to + ' - Event: ' + notification.event + ' - Reason: ' + notification.reason);
+    utils.logLimeNotification = function(notification, event) {
+        utils.logMessage(event + '\nId: ' + notification.id + '\nFrom: ' + notification.from + ' \nTo: ' + notification.to + ' \nEvent: ' + notification.event + ' \nReason: ' + notification.reason + '\n\n');
     };
 
-    utils.logLimeCommand = function(command, event){
-        utils.logMessage(event + '- From: ' + command.from + ' - To: ' + command.to + ' - Method: ' + command.method + ' - Uri: ' + command.uri + ' - Status: ' + command.status);
+    utils.logLimeCommand = function(command, event) {
+        utils.logMessage(event + '\nId: ' + command.id + '\nFrom: ' + command.from + ' \nTo: ' + command.to + ' \nMethod: ' + command.method + ' \nUri: ' + command.uri + ' \nStatus: ' + command.status + '\n\n');
     };
 
     window.utils = utils;

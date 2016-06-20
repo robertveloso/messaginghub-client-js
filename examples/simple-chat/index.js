@@ -2,6 +2,7 @@
 /* global WebSocketTransport */
 /* global MessagingHubClient */
 /* global utils */
+/* global Lime */
 (function(window) {
     'use strict';
 
@@ -71,7 +72,7 @@
 
     window.sendMessage = function() {
         var message = {
-            id: utils.newGuid(),
+            id: Lime.Guid(),
             to: messageToInput.value,
             type: 'text/plain',
             content: messageContentInput.value
@@ -94,7 +95,7 @@
 
     window.ping = function(){
         var pingCommand = {
-            id: utils.newGuid(),
+            id: Lime.Guid(),
             uri: '/ping',
             method: 'get'
         };
