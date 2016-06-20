@@ -42,6 +42,9 @@ export default class TcpLimeServer {
                     socket.writeJSON(Sessions.authenticating);
                     break;
                 case 'authenticating':
+                    if (envelope.authentication.scheme === 'plain' && envelope.authentication.password !== 'MTIzNDU2') {
+                        throw new Error(`Invalid password '${envelope.authentication.password}'`);
+                    }
                     socket.writeJSON(Sessions.established);
                     break;
                 case 'finishing':
