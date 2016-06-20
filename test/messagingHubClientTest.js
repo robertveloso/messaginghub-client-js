@@ -2,7 +2,6 @@
 
 /*eslint-env node, mocha */
 
-import Lime from 'lime-js';
 import MessagingHubClient from '../src/MessagingHubClient';
 import TcpTransport from './helpers/TcpTransport';
 import TcpLimeServer from './helpers/TcpLimeServer';
@@ -38,10 +37,16 @@ describe('MessagingHubClient tests', function() {
 
     it('should automatically send a set presence command when connecting', (done) => {
         this.server._onPresenceCommand = (command) => {
-            command.method.should.equal(Lime.CommandMethod.SET);
-            command.uri.should.equal('/presence');
-            command.type.should.equal('application/vnd.lime.presence+json');
-            command.resource.status.should.equal('available');
+            command.should.eql({
+                id: command.id,
+                method: 'set',
+                uri: '/presence',
+                type: 'application/vnd.lime.presence+json',
+                resource: {
+                    status: 'available',
+                    routingRule: 'identity'
+                }
+            });
             this.guest.close().then(() => done());
         };
 
