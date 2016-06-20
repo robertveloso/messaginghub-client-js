@@ -20,6 +20,10 @@ export const Commands = {
         id: envelope.id,
         method: 'get',
         status: 'success'
+    }),
+    presenceResponse: (envelope) => ({
+        id: envelope.id,
+        method: 'set'
     })
 };
 export const Messages = {

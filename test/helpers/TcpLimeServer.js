@@ -5,8 +5,6 @@ import Promise from 'bluebird';
 import Lime from 'lime-js';
 import {Sessions, Commands, Messages, Notifications} from './TestEnvelopes';
 
-const isBase64 = (s) => !!s.match(/^(?:[A-Z0-9+\/]{4})*(?:[A-Z0-9+\/]{2}==|[A-Z0-9+\/]{3}=|[A-Z0-9+\/]{4})$/i);
-
 export default class TcpLimeServer {
 
     constructor() {
@@ -19,13 +17,15 @@ export default class TcpLimeServer {
 
     broadcast(envelope) {
         this._connections = this._connections.filter((socket) => {
-            if(!socket.remoteAddress) {
+            if (!socket.remoteAddress) {
                 return false;
             }
             socket.writeJSON(envelope);
             return true;
         });
     }
+
+    _onPresenceCommand() {}
 
     _onConnection(socket) {
         socket.writeJSON = (json) => socket.write(JSON.stringify(json));
@@ -36,32 +36,33 @@ export default class TcpLimeServer {
             let envelope = JSON.parse(data);
 
             // Session
-            if(Lime.Envelope.isSession(envelope)) {
+            if (Lime.Envelope.isSession(envelope)) {
                 switch(envelope.state) {
                 case 'new':
                     socket.writeJSON(Sessions.authenticating);
                     break;
                 case 'authenticating':
-                    if (envelope.authentication.scheme === 'plain' && !isBase64(envelope.authentication.password)) {
-                        throw new Error('Invalid password');
-                    }
                     socket.writeJSON(Sessions.established);
                     break;
                 case 'finishing':
                     socket.writeJSON(Sessions.finished);
                     break;
                 }
-            }
             // Command
-            else if(Lime.Envelope.isCommand(envelope)) {
+            } else if (Lime.Envelope.isCommand(envelope)) {
                 switch(envelope.uri) {
+                case '/presence':
+                    socket.presence = true;
+                    this._onPresenceCommand(envelope);
+                    socket.writeJSON(Commands.presenceResponse(envelope));
+                    break;
                 case '/ping':
                     socket.writeJSON(Commands.pingResponse(envelope));
                     break;
                 }
             }
             // Message
-            else if(Lime.Envelope.isMessage(envelope)) {
+            else if (Lime.Envelope.isMessage(envelope)) {
                 switch(envelope.content) {
                 case 'ping':
                     socket.writeJSON(Messages.pong);
@@ -69,7 +70,7 @@ export default class TcpLimeServer {
                 }
             }
             // Notification
-            else if(Lime.Envelope.isNotification(envelope)) {
+            else if (Lime.Envelope.isNotification(envelope)) {
                 switch(envelope.event) {
                 case 'ping':
                     socket.writeJSON(Notifications.pong);

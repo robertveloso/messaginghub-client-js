@@ -2,6 +2,7 @@
 
 /*eslint-env node, mocha */
 
+import Lime from 'lime-js';
 import MessagingHubClient from '../src/MessagingHubClient';
 import TcpTransport from './helpers/TcpTransport';
 import TcpLimeServer from './helpers/TcpLimeServer';
@@ -32,7 +33,20 @@ describe('MessagingHubClient tests', function() {
 
     it('should connect with plain authentication converting to a base64 password', (done) => {
         this.client = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
-        this.client.connect('test', 't35t64').then(() => done());
+        this.client.connect('test', '123456').then(() => done());
+    });
+
+    it('should automatically send a set presence command when connecting', (done) => {
+        this.server._onPresenceCommand = (command) => {
+            command.method.should.equal(Lime.CommandMethod.SET);
+            command.uri.should.equal('/presence');
+            command.type.should.equal('application/vnd.lime.presence+json');
+            command.resource.status.should.equal('available');
+            this.guest.close().then(() => done());
+        };
+
+        this.guest = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        this.guest.connect('guest');
     });
 
     it('should add and remove message listeners', () => {

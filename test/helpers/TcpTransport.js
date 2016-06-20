@@ -16,7 +16,9 @@ export default class TcpTransport {
             if (this._traceEnabled) {
                 logger('TcpTransport RECEIVE: ' + e.toString());
             }
-            this.onEnvelope(JSON.parse(e.toString()));
+            // workaround for mocking tests
+            var envelopes = e.toString().replace('}{', '}^END${').split('^END$');
+            envelopes.forEach((envelope) => this.onEnvelope(JSON.parse(envelope)));
         });
     }
 
