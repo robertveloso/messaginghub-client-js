@@ -48,7 +48,8 @@ export default class MessagingHubClient {
                     uri: '/presence',
                     type: 'application/vnd.lime.presence+json',
                     resource: {
-                        status: 'available'
+                        status: 'available',
+                        routingRule: 'identity'
                     }
                 }).then(() => session);
             });
