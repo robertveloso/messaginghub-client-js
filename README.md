@@ -52,7 +52,7 @@ In order to use these transport classes in your project you must also include th
 
 ### Connect
 ```javascript
-client.connect(user, password).then(/* handle connection */);
+client.connectWithKey(identifier, key).then(/* handle connection */);
 ```
 
 ### Sending
@@ -63,7 +63,7 @@ as shown in the examples below:
 
 #### Sending messages
 ```javascript
-client.connect(user, password)
+client.connectWithKey(identifier, key)
     .then(function(session) {
       // send a message to some user
       var msg = { type: "application/json", content: "Hello, world", to: "my@friend.com" };
@@ -73,7 +73,7 @@ client.connect(user, password)
 
 #### Sending notifications
 ```javascript
-client.connect(user, password)
+client.connectWithKey(identifier, key)
     .then(function(session) {
       // send a "received" notification to some user
       var notification = { to: "my@friend.com", event: Lime.NotificationEvent.RECEIVED };
@@ -83,7 +83,7 @@ client.connect(user, password)
 
 #### Sending commands
 ```javascript
-client.connect(user, password)
+client.connectWithKey(identifier, key)
     .then(function(session) {
       // send a message to some user
       var command = { uri: "/ping", method: Lime.CommandMethod.GET };
