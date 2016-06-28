@@ -25,20 +25,17 @@ export default class MessagingHubClient {
                 .forEach((receiver) => receiver.predicate(notification) && receiver.callback(notification));
         this._clientChannel.onCommand = (c) => (this._commandResolves[c.id] || identity)(c);
     }
-
+    
     // connect :: String -> String -> Promise Session
-    connect(user, password) {
+    connectWithPassword(identifier, password) {
+        if (!identifier) throw 'The identifier is required';
+        if (!password) throw 'The password is required';
         return this._transport
             .open(this.uri)
             .then(() => {
-                let authentication;
-                if(password) {
-                    authentication = new Lime.PlainAuthentication();
-                    authentication.password = Base64.encode(password);
-                } else {
-                    authentication = new Lime.GuestAuthentication();
-                }
-                return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, user, authentication, '');
+                let authentication = new Lime.PlainAuthentication();
+                authentication.password = Base64.encode(password);
+                return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
             })
             .then((session) => {
                 // TODO: use default Lime solution for Presences when available
@@ -54,6 +51,32 @@ export default class MessagingHubClient {
                 }).then(() => session);
             });
     }
+    
+    // connect :: String -> String -> Promise Session
+    connectWithKey(identifier, key) {
+        if (!identifier) throw 'The identifier is required';
+        if (!key) throw 'The key is required';
+        return this._transport
+            .open(this.uri)
+            .then(() => {
+                let authentication = new Lime.KeyAuthentication();
+                authentication.key = Base64.encode(key);
+                return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
+            })
+            .then((session) => {
+                // TODO: use default Lime solution for Presences when available
+                return this.sendCommand({
+                    id: Lime.Guid(),
+                    method: Lime.CommandMethod.SET,
+                    uri: '/presence',
+                    type: 'application/vnd.lime.presence+json',
+                    resource: {
+                        status: 'available',
+                        routingRule: 'identity'
+                    }
+                }).then(() => session);
+            });
+    }    
 
     // close :: Promise ()
     close() {
