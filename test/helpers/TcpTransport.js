@@ -17,7 +17,7 @@ export default class TcpTransport {
                 logger('TcpTransport RECEIVE: ' + e.toString());
             }
             // workaround for mocking tests
-            var envelopes = e.toString().replace('}{', '}^END${').split('^END$');
+            var envelopes = e.toString().replace(/\}\{/g, '}^END${').split('^END$');
             envelopes.forEach((envelope) => this.onEnvelope(JSON.parse(envelope)));
         });
     }

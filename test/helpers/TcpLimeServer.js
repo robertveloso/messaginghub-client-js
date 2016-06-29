@@ -17,10 +17,13 @@ export default class TcpLimeServer {
 
     broadcast(envelope) {
         this._connections = this._connections.filter((socket) => {
-            if (!socket.remoteAddress) {
-                return false;
+            try {
+                socket.writeJSON(envelope);
+            } catch (err) {
+                if (socket.writable) {
+                    return false;
+                }
             }
-            socket.writeJSON(envelope);
             return true;
         });
     }
