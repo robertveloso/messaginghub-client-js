@@ -15,24 +15,14 @@ describe('MessagingHubClient tests', function() {
         this.server.listen(8124).then(done);
     });
 
-    it('should connect with guest authentication returning a promise', (done) => {
-        this.guestTransport = new TcpTransport();
-        this.guest = new MessagingHubClient('127.0.0.1:8124', this.guestTransport);
-        this.guest.connect('guest').then(() => done());
-    });
-
-    it('should close connections without errors', (done) => {
-        this.guest.close().then(() => done());
-    });
-
-    it('should close transport after closing connection', () => {
-        this.guestTransport.send.bind(this.guestTransport, { type: 'text/plain', content: 'test' })
-            .should.throw(Error);
-    });
-
     it('should connect with plain authentication converting to a base64 password', (done) => {
         this.client = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
-        this.client.connect('test', '123456').then(() => done());
+        this.client.connectWithPassword('test', '123456').then(() => done());
+    });
+
+    it('should connect with key authentication converting to a base64 key', (done) => {
+        this.client = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        this.client.connectWithKey('testKey', 'abcdef').then(() => done());
     });
 
     it('should automatically send a set presence command when connecting', (done) => {
@@ -51,7 +41,7 @@ describe('MessagingHubClient tests', function() {
         };
 
         this.guest = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
-        this.guest.connect('guest');
+        this.guest.connectWithPassword('test2', '123456');
     });
 
     it('should add and remove message listeners', () => {

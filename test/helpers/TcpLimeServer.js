@@ -44,6 +44,8 @@ export default class TcpLimeServer {
                 case 'authenticating':
                     if (envelope.authentication.scheme === 'plain' && envelope.authentication.password !== 'MTIzNDU2') {
                         throw new Error(`Invalid password '${envelope.authentication.password}'`);
+                    } else if (envelope.authentication.scheme === 'key' && envelope.authentication.key !== 'YWJjZGVm') {
+                        throw new Error(`Invalid key '${envelope.authentication.key}'`);
                     }
                     socket.writeJSON(Sessions.established);
                     break;
