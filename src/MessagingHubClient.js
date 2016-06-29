@@ -25,11 +25,11 @@ export default class MessagingHubClient {
                 .forEach((receiver) => receiver.predicate(notification) && receiver.callback(notification));
         this._clientChannel.onCommand = (c) => (this._commandResolves[c.id] || identity)(c);
     }
-    
-    // connect :: String -> String -> Promise Session
+
+    // connectWithPassword :: String -> String -> Promise Session
     connectWithPassword(identifier, password) {
-        if (!identifier) throw 'The identifier is required';
-        if (!password) throw 'The password is required';
+        if (!identifier) throw new Error('The identifier is required');
+        if (!password) throw new Error('The password is required');
         return this._transport
             .open(this.uri)
             .then(() => {
@@ -38,24 +38,14 @@ export default class MessagingHubClient {
                 return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
             })
             .then((session) => {
-                // TODO: use default Lime solution for Presences when available
-                return this.sendCommand({
-                    id: Lime.Guid(),
-                    method: Lime.CommandMethod.SET,
-                    uri: '/presence',
-                    type: 'application/vnd.lime.presence+json',
-                    resource: {
-                        status: 'available',
-                        routingRule: 'identity'
-                    }
-                }).then(() => session);
+                return this._sendPresenceCommand().then(() => session);
             });
     }
-    
-    // connect :: String -> String -> Promise Session
+
+    // connectWithKey :: String -> String -> Promise Session
     connectWithKey(identifier, key) {
-        if (!identifier) throw 'The identifier is required';
-        if (!key) throw 'The key is required';
+        if (!identifier) throw new Error('The identifier is required');
+        if (!key) throw new Error('The key is required');
         return this._transport
             .open(this.uri)
             .then(() => {
@@ -64,19 +54,23 @@ export default class MessagingHubClient {
                 return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
             })
             .then((session) => {
-                // TODO: use default Lime solution for Presences when available
-                return this.sendCommand({
-                    id: Lime.Guid(),
-                    method: Lime.CommandMethod.SET,
-                    uri: '/presence',
-                    type: 'application/vnd.lime.presence+json',
-                    resource: {
-                        status: 'available',
-                        routingRule: 'identity'
-                    }
-                }).then(() => session);
+                return this._sendPresenceCommand().then(() => session);
             });
-    }    
+    }
+
+    _sendPresenceCommand() {
+        // TODO: use default Lime solution for Presences when available
+        return this.sendCommand({
+            id: Lime.Guid(),
+            method: Lime.CommandMethod.SET,
+            uri: '/presence',
+            type: 'application/vnd.lime.presence+json',
+            resource: {
+                status: 'available',
+                routingRule: 'identity'
+            }
+        });
+    }
 
     // close :: Promise ()
     close() {
