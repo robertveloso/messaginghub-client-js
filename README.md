@@ -122,3 +122,7 @@ client.sendCommand(command)
         // handle command repsonse
     });
 ```
+
+## Contributing
+
+For information on how to contribute to this package, please refer to our [Contribution guidelines](https://github.com/takenet/messaginghub-client-js/blob/master/CONTRIBUTING.md).
