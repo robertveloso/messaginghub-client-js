@@ -26,6 +26,20 @@ export default class MessagingHubClient {
         this._clientChannel.onCommand = (c) => (this._commandResolves[c.id] || identity)(c);
     }
 
+    // connectWithGuest :: String -> String -> Promise Session
+    connectWithGuest(identifier) {
+        if (!identifier) throw new Error('The identifier is required');
+        return this._transport
+            .open(this.uri)
+            .then(() => {
+                let authentication = new Lime.GuestAuthentication();
+                return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
+            })
+            .then((session) => {
+                return this._sendPresenceCommand().then(() => session);
+            });
+    }
+
     // connectWithPassword :: String -> String -> Promise Session
     connectWithPassword(identifier, password) {
         if (!identifier) throw new Error('The identifier is required');
