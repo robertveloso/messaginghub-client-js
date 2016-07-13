@@ -64,7 +64,7 @@ export default class MessagingHubClient {
             .open(this.uri)
             .then(() => {
                 let authentication = new Lime.KeyAuthentication();
-                authentication.key = Base64.encode(key);
+                authentication.key = key;
                 return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
             })
             .then((session) => {

@@ -48,14 +48,14 @@ describe('MessagingHubClient', function() {
         this.client.connectWithPassword('test', '123456').then(() => done());
     });
 
-    it('should connect with key authentication converting to a base64 key', (done) => {
+    it('should connect with key authentication', (done) => {
         const clientWithoutIdentifier = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
         clientWithoutIdentifier.connectWithKey.bind(clientWithoutIdentifier).should.throw(Error);
 
         const clientWithoutKey = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
-        clientWithoutKey.connectWithKey.bind(clientWithoutKey, 'test2').should.throw(Error);
+        clientWithoutKey.connectWithKey.bind(clientWithoutKey, 'dGVzdHQy').should.throw(Error);
 
-        this.client.connectWithKey('testKey', 'abcdef').then(() => done());
+        this.client.connectWithKey('testKey', 'YWJjZGVm').then(() => done());
     });
 
     it('should automatically send a set presence command when connecting', (done) => {
@@ -82,7 +82,7 @@ describe('MessagingHubClient', function() {
         let g = (x) => x;
 
         this.client
-            .connectWithKey('test', 'abcdef')
+            .connectWithKey('test', 'YWJjZGVm')
             .then(() => {
                 let remove_f = this.client.addMessageReceiver('application/json', f);
                 let remove_g = this.client.addMessageReceiver('application/json', g);
@@ -103,7 +103,7 @@ describe('MessagingHubClient', function() {
         let g = (x) => x;
 
         this.client
-            .connectWithKey('test', 'abcdef')
+            .connectWithKey('test', 'YWJjZGVm')
             .then(() => {
                 let remove_f = this.client.addNotificationReceiver('received', f);
                 let remove_g = this.client.addNotificationReceiver('received', g);
@@ -137,7 +137,7 @@ describe('MessagingHubClient', function() {
         });
 
         this.client
-            .connectWithKey('test', 'abcdef')
+            .connectWithKey('test', 'YWJjZGVm')
             .then(() => this.server.broadcast({ type: 'text/plain', content: 'test' }));
     });
 
@@ -160,13 +160,13 @@ describe('MessagingHubClient', function() {
         });
 
         this.client
-            .connectWithKey('test', 'abcdef')
+            .connectWithKey('test', 'YWJjZGVm')
             .then(() => this.server.broadcast({ type: 'text/plain', content: 'test' }));
     });
 
     it('should do nothing when receiving unknown messages, notifications or commands', (done) => {
         this.client
-            .connectWithKey('test', 'abcdef')
+            .connectWithKey('test', 'YWJjZGVm')
             .then(() => {
                 let message = { type: 'application/unknown', content: 'this looks odd' };
                 let notification = { event: 'consumed', content: 'this looks odd' };
@@ -188,7 +188,7 @@ describe('MessagingHubClient', function() {
         });
 
         this.client
-            .connectWithKey('test', 'abcdef')
+            .connectWithKey('test', 'YWJjZGVm')
             .then(() => this.client.sendMessage({ type: 'text/plain', content: 'ping' }));
     });
 
@@ -199,13 +199,13 @@ describe('MessagingHubClient', function() {
         });
 
         this.client
-            .connectWithKey('test', 'abcdef')
+            .connectWithKey('test', 'YWJjZGVm')
             .then(() => this.client.sendNotification({ event: 'ping' }));
     });
 
     it('should send commands and receive a response', (done) => {
         this.client
-            .connectWithKey('test', 'abcdef')
+            .connectWithKey('test', 'YWJjZGVm')
             .then(() => this.client.sendCommand({ id: 'test', method: 'get', uri: '/ping' }))
             .then((c) => {
                 c.id.should.equal('test');
