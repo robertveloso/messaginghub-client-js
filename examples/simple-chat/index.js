@@ -7,21 +7,22 @@
     'use strict';
 
     // buttons
-    var connectButton = document.getElementById('connect-button');
-    var disconnectButton = document.getElementById('disconnect-button');
+    var $connectButton = document.getElementById('connect-button');
+    var $disconnectButton = document.getElementById('disconnect-button');
 
     // input elements for connection
-    var identityInput = document.getElementById('identity-input');
-    var passwordInput = document.getElementById('password-input');
-    var uriInput = document.getElementById('uri-input');
+    var $identityInput = document.getElementById('identity-input');
+    var $passwordInput = document.getElementById('password-input');
+    var $uriInput = document.getElementById('uri-input');
     // input elements for messages
-    var messageToInput = document.getElementById('message-to-input');
-    var messageContentInput = document.getElementById('message-content-input');
+    var $messageToInput = document.getElementById('message-to-input');
+    var $messageContentInput = document.getElementById('message-content-input');
     // input elements for notifications
-    var notificationIdInput = document.getElementById('notification-id-input');
-    var notificationToInput = document.getElementById('notification-to-input');
-    var notificationEventInput = document.getElementById('notification-event-input');
-    //var clientChannel;
+    var $notificationIdInput = document.getElementById('notification-id-input');
+    var $notificationToInput = document.getElementById('notification-to-input');
+    var $notificationEventInput = document.getElementById('notification-event-input');
+
+    //
     var messagingHubClient;
     var identity;
     var password;
@@ -29,9 +30,13 @@
 
     function createClient(uri, identity, password){
         messagingHubClient = new MessagingHubClient(uri, new WebSocketTransport(true));
-        messagingHubClient.connect(identity, password)
-        .then(setConnectedState)
-        .catch(function(err) {utils.logMessage('An error occurred: ' + err); return; });
+        messagingHubClient
+            .connect(identity, password)
+            .then(setConnectedState)
+            .catch(function(err) {
+                utils.logMessage('An error occurred: ' + err);
+                return;
+            });
 
         messagingHubClient.addMessageReceiver(null, function(message) {
             utils.logLimeMessage(message, 'Message received');
@@ -42,25 +47,25 @@
         });
     }
 
-    function setConnectedState(){
-        connectButton.disabled = true;
-        disconnectButton.disabled = false;
+    function setConnectedState() {
+        $connectButton.disabled = true;
+        $disconnectButton.disabled = false;
         utils.logMessage('Client connected');
     }
 
-    function setDisconnectedState(){
-        connectButton.disabled = false;
-        disconnectButton.disabled = true;
+    function setDisconnectedState() {
+        $connectButton.disabled = false;
+        $disconnectButton.disabled = true;
         utils.logMessage('Client disconnected');
     }
 
     window.connect = function() {
-        utils.checkMandatoryInput(identityInput);
-        utils.checkMandatoryInput(uriInput);
+        utils.checkMandatoryInput($identityInput);
+        utils.checkMandatoryInput($uriInput);
 
-        identity = identityInput.value;
-        password = passwordInput.value;
-        uri = uriInput.value;
+        identity = $identityInput.value;
+        password = $passwordInput.value;
+        uri = $uriInput.value;
 
         createClient(uri, identity, password);
     };
@@ -73,20 +78,20 @@
     window.sendMessage = function() {
         var message = {
             id: Lime.Guid(),
-            to: messageToInput.value,
+            to: $messageToInput.value,
             type: 'text/plain',
-            content: messageContentInput.value
+            content: $messageContentInput.value
         };
 
         messagingHubClient.sendMessage(message);
         utils.logLimeMessage(message, 'Message sent');
     };
 
-    window.sendNotification = function () {
+    window.sendNotification = function() {
         var notification = {
-            id: notificationIdInput.value,
-            to: notificationToInput.value,
-            event: notificationEventInput.value
+            id: $notificationIdInput.value,
+            to: $notificationToInput.value,
+            event: $notificationEventInput.value
         };
 
         messagingHubClient.sendNotification(notification);
@@ -100,13 +105,14 @@
             method: 'get'
         };
 
-        messagingHubClient.sendCommand(pingCommand)
-        .then(function(commandResponse) {
-            utils.logLimeCommand(pingCommand, 'Ping sent');
-            utils.logLimeCommand(commandResponse, 'Ping response');
-        })
-        .catch(function(err) {
-            utils.logMessage('An error occurred: ' + err);
-        });
+        messagingHubClient
+            .sendCommand(pingCommand)
+            .then(function(commandResponse) {
+                utils.logLimeCommand(pingCommand, 'Ping sent');
+                utils.logLimeCommand(commandResponse, 'Ping response');
+            })
+            .catch(function(err) {
+                utils.logMessage('An error occurred: ' + err);
+            });
     };
 })(this);
