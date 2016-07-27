@@ -6,20 +6,22 @@ let WebSocketTransport = require('lime-transport-websocket');
 let MessagingHubClient = require('messaginghub-client');
 let request = require('request-promise');
 
-const URI = (process.env.NODE_ENV === 'production') ? 'ws://msging.net:8081' : 'ws://hmg.msging.net:8081';
-
+// These are the MessagingHub credentials for this bot.
+// If you want to create your own bot, see http://omni.messaginghub.io.
 const IDENTIFIER = 'randomwords';
 const ACCESS_KEY = 'STlpSk1Zdnd1RVBRbENVMGY4d3U=';
+
+const MESSAGINGHUB_ENDPOINT = 'ws://msging.net:8081';
 
 const API_ENDPOINT = 'http://randomword.setgetgo.com/get.php';
 
 // instantiate and setup client
-let client = new MessagingHubClient(URI, new WebSocketTransport());
+let client = new MessagingHubClient(MESSAGINGHUB_ENDPOINT, new WebSocketTransport());
 
-client.addMessageReceiver(null, (m) => {
+client.addMessageReceiver(() => true, (m) => {
     if (m.type !== 'text/plain') return;
 
-    console.info(`<< ${m.from}: ${m.content}`);
+    console.log(`<< ${m.from}: ${m.content}`);
 
     // consumed notification
     client.sendNotification({
@@ -30,7 +32,7 @@ client.addMessageReceiver(null, (m) => {
 
     // 50% chance of denying the request
     if (Math.random() < 0.5) {
-        console.info(`!> No, ${m.from}!`);
+        console.log(`!> No, ${m.from}!`);
         return;
     }
 
@@ -44,13 +46,13 @@ client.addMessageReceiver(null, (m) => {
                 content: res,
                 to: m.from
             };
-            console.info(`>> ${message.to}: ${message.content}`);
+            console.log(`>> ${message.to}: ${message.content}`);
             client.sendMessage(message);
         })
         .catch((err) => console.error(err));
 });
 
-// connect client
+// connect to the MessagingHub server
 client.connectWithKey(IDENTIFIER, ACCESS_KEY)
     .then(() => console.log('Listening...'))
     .catch((err) => console.error(err));
