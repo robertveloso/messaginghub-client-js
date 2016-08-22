@@ -189,6 +189,9 @@ describe('MessagingHubClient', function() {
     });
 
     it('should do nothing when receiving unknown messages, notifications or commands', (done) => {
+        this.client.addMessageReceiver('sometype', () => false);
+        this.client.addNotificationReceiver('sometype', () => false);
+
         this.client
             .connectWithKey('test', 'YWJjZGVm')
             .then(() => {
@@ -227,6 +230,39 @@ describe('MessagingHubClient', function() {
             .then(() => this.client.sendNotification({ event: 'ping' }));
     });
 
+    it('should automatically send received notifications for messages', (done) => {
+        this.client.addMessageReceiver(() => true, () => true);
+        this.client.addNotificationReceiver('received', () => done());
+
+        this.client
+            .connectWithKey('test', 'YWJjZGVm')
+            .then(() => this.server.broadcast({ type: 'text/plain', content: 'test' }));
+    });
+
+    it('should automatically send consumed notifications for messages when receiver successfully handles it', (done) => {
+        this.client.addMessageReceiver(() => true, () => true);
+        this.client.addNotificationReceiver('consumed', () => done());
+
+        this.client
+            .connectWithKey('test', 'YWJjZGVm')
+            .then(() => this.server.broadcast({ type: 'text/plain', content: 'test' }));
+    });
+
+    it('should automatically send failed notifications for messages when receiver fails to handle it', (done) => {
+        this.client.addMessageReceiver(() => true, () => {
+            throw new Error('test error');
+        });
+        this.client.addNotificationReceiver('failed', (n) => {
+            n.reason.code.should.equal(101);
+            n.reason.description.should.equal('test error');
+            done();
+        });
+
+        this.client
+            .connectWithKey('test', 'YWJjZGVm')
+            .then(() => this.server.broadcast({ type: 'text/plain', content: 'test' }));
+    });
+
     it('should send commands and receive a response', (done) => {
         this.client
             .connectWithKey('test', 'YWJjZGVm')
@@ -235,6 +271,16 @@ describe('MessagingHubClient', function() {
                 c.id.should.equal('test');
                 c.method.should.equal('get');
                 c.status.should.equal('success');
+                done();
+            });
+    });
+
+    it('should reject a command\'s promise when the received status is \'failure\'', (done) => {
+        this.client
+            .connectWithKey('test', 'YWJjZGVm')
+            .then(() => this.client.sendCommand({ id: 'test', method: 'set', uri: '/unknown' }))
+            .catch((c) => {
+                c.status.should.equal('failure');
                 done();
             });
     });

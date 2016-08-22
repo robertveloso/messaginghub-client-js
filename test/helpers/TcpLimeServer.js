@@ -77,6 +77,8 @@ export default class TcpLimeServer {
             case '/ping':
                 socket.writeJSON(Commands.pingResponse(envelope));
                 break;
+            default:
+                socket.writeJSON(Commands.failureResponse(envelope));
             }
         }
         // Message
@@ -89,6 +91,9 @@ export default class TcpLimeServer {
         }
         // Notification
         else if (Lime.Envelope.isNotification(envelope)) {
+            // echo back received notifications
+            socket.writeJSON(envelope);
+
             switch(envelope.event) {
             case 'ping':
                 socket.writeJSON(Notifications.pong);

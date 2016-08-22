@@ -30,6 +30,11 @@ export const Commands = {
         id: envelope.id,
         method: 'set',
         status: 'success'
+    }),
+    failureResponse: (envelope) => ({
+        id: envelope.id,
+        method: envelope.method,
+        status: 'failure'
     })
 };
 export const Messages = {
