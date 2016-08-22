@@ -17,9 +17,27 @@ export default class MessagingHubClient {
         this._notificationReceivers = [];
         this._commandResolves = {};
 
-        this._clientChannel.onMessage = (message) =>
-            this._messageReceivers
-                .forEach((receiver) => receiver.predicate(message) && receiver.callback(message));
+        this._clientChannel.onMessage = (message) => {
+            this._messageReceivers.forEach((receiver) => {
+                if (receiver.predicate(message)) {
+                    try {
+                        this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
+                        receiver.callback(message);
+                        this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
+                    } catch(e) {
+                        this.sendNotification({
+                            id: message.id,
+                            to: message.from,
+                            event: Lime.NotificationEvent.FAILED,
+                            reason: {
+                                code: 101,
+                                description: e.message
+                            }
+                        });
+                    }
+                }
+            });
+        };
         this._clientChannel.onNotification = (notification) =>
             this._notificationReceivers
                 .forEach((receiver) => receiver.predicate(notification) && receiver.callback(notification));
