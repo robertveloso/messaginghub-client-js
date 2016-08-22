@@ -77,6 +77,30 @@ describe('MessagingHubClient', function() {
         this.client.connectWithGuest('guest2');
     });
 
+    it('should automatically send a set receipt command when connecting', (done) => {
+        this.server._onReceiptCommand = (command) => {
+            command.should.eql({
+                id: command.id,
+                method: 'set',
+                uri: '/receipt',
+                type: 'application/vnd.lime.receipt+json',
+                resource: {
+                    events: [
+                        'failed',
+                        'accepted',
+                        'dispatched',
+                        'received',
+                        'consumed'
+                    ]
+                }
+            });
+            this.server._onPresenceCommand = () => {};
+            done();
+        };
+
+        this.client.connectWithGuest('guest2');
+    });
+
     it('should add and remove message listeners', (done) => {
         let f = () => undefined;
         let g = (x) => x;

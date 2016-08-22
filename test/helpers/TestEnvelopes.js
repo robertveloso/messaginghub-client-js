@@ -23,7 +23,13 @@ export const Commands = {
     }),
     presenceResponse: (envelope) => ({
         id: envelope.id,
-        method: 'set'
+        method: 'set',
+        status: 'success'
+    }),
+    receiptResponse: (envelope) => ({
+        id: envelope.id,
+        method: 'set',
+        status: 'success'
     })
 };
 export const Messages = {
