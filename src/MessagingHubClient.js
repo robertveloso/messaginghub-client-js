@@ -35,9 +35,8 @@ export default class MessagingHubClient {
                 let authentication = new Lime.GuestAuthentication();
                 return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
             })
-            .then((session) => {
-                return this._sendPresenceCommand().then(() => session);
-            });
+            .then((session) => this._sendPresenceCommand().then(() => session))
+            .then((session) => this._sendReceiptsCommand().then(() => session));
     }
 
     // connectWithPassword :: String -> String -> Promise Session
@@ -51,9 +50,8 @@ export default class MessagingHubClient {
                 authentication.password = Base64.encode(password);
                 return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
             })
-            .then((session) => {
-                return this._sendPresenceCommand().then(() => session);
-            });
+            .then((session) => this._sendPresenceCommand().then(() => session))
+            .then((session) => this._sendReceiptsCommand().then(() => session));
     }
 
     // connectWithKey :: String -> String -> Promise Session
@@ -82,6 +80,25 @@ export default class MessagingHubClient {
             resource: {
                 status: 'available',
                 routingRule: 'identity'
+            }
+        });
+    }
+
+    _sendReceiptsCommand() {
+        // TODO: use default Lime solution for Receipts when available
+        return this.sendCommand({
+            id: Lime.Guid(),
+            method: Lime.CommandMethod.SET,
+            uri: '/receipt',
+            type: 'application/vnd.lime.receipt+json',
+            resource: {
+                events: [
+                    'failed',
+                    'accepted',
+                    'dispatched',
+                    'received',
+                    'consumed'
+                ]
             }
         });
     }
