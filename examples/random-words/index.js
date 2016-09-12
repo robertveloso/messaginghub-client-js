@@ -7,9 +7,9 @@ let MessagingHubClient = require('messaginghub-client');
 let request = require('request-promise');
 
 // These are the MessagingHub credentials for this bot.
-// If you want to create your own bot, see http://omni.messaginghub.io.
+// If you want to create your own bot, see http://blip.ai
 const IDENTIFIER = 'randomwords';
-const ACCESS_KEY = 'STlpSk1Zdnd1RVBRbENVMGY4d3U=';
+const ACCESS_KEY = 'aklFSmllSER1b25VakRKOXp3eFE=';
 
 const MESSAGINGHUB_ENDPOINT = 'ws://msging.net:8081';
 
@@ -22,13 +22,6 @@ client.addMessageReceiver(() => true, (m) => {
     if (m.type !== 'text/plain') return;
 
     console.log(`<< ${m.from}: ${m.content}`);
-
-    // consumed notification
-    client.sendNotification({
-        id: m.id,
-        to: m.from,
-        event: Lime.NotificationEvent.CONSUMED
-    });
 
     // 50% chance of denying the request
     if (Math.random() < 0.5) {
