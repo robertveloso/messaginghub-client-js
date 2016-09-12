@@ -29,10 +29,10 @@ However, if you're building for the browser and using vanilla JavaScript, you ca
 <script src="./node_modules/messaginghub-client/dist/messaginghub-client.js" type="text/javascript"></script>
 ```
 
-Or you can also use the script served by [npmcdn](https://npmcdn.com):
+Or you can also use the script served by [unpkg](https://unpkg.com):
 ```html
-<script src="https://npmcdn.com/lime-js" type="text/javascript"></script>
-<script src="https://npmcdn.com/messaginghub-client" type="text/javascript"></script>
+<script src="https://unpkg.com/lime-js" type="text/javascript"></script>
+<script src="https://unpkg.com/messaginghub-client" type="text/javascript"></script>
 ```
 
 ### Instantiate the MessagingHub Client
@@ -48,7 +48,7 @@ var client = new MessagingHubClient('ws://msging.net:8081', new Lime.WebSocketTr
 The MessagingHubClient class uses transport classes defined according to the Lime procotol specification from the [lime-js](https://github.com/takenet/lime-js) package. There are a few official packages for Lime transport classes publicly available on NPM and on our [Github](https://github.com/takenet), but we plan on building more transport classes for node.js and the browser:
 - [WebSocketTransport](https://github.com/takenet/lime-transport-websocket)
 
-In order to use these transport classes in your project you must also include their script files using either npm or npmcdn (refer to the [How to use](#how-to-use) section).
+In order to use these transport classes in your project you must also include their script files using either npm or unpkg (refer to the [How to use](#how-to-use) section).
 
 ### Connect
 ```javascript
