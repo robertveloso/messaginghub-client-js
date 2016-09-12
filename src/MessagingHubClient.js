@@ -83,9 +83,8 @@ export default class MessagingHubClient {
                 authentication.key = key;
                 return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
             })
-            .then((session) => {
-                return this._sendPresenceCommand().then(() => session);
-            });
+            .then((session) => this._sendPresenceCommand().then(() => session))
+            .then((session) => this._sendReceiptsCommand().then(() => session));
     }
 
     _sendPresenceCommand() {

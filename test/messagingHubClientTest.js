@@ -94,7 +94,7 @@ describe('MessagingHubClient', function() {
                     ]
                 }
             });
-            this.server._onPresenceCommand = () => {};
+            this.server._onReceiptCommand = () => {};
             done();
         };
 
