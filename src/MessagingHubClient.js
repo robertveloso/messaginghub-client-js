@@ -8,40 +8,15 @@ export default class MessagingHubClient {
     get uri() { return this._uri; }
 
     // MessagingHubClient :: String -> Transport? -> MessagingHubClient
-    constructor(uri, transport) {
-        this._uri = uri;
-        this._transport = transport;
-        this._clientChannel = new Lime.ClientChannel(this._transport, true, true);
-
+    constructor(uri, transportFactory) {
         this._messageReceivers = [];
         this._notificationReceivers = [];
         this._commandResolves = {};
-
-        this._clientChannel.onMessage = (message) => {
-            this._messageReceivers.forEach((receiver) => {
-                if (receiver.predicate(message)) {
-                    try {
-                        this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
-                        receiver.callback(message);
-                        this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
-                    } catch(e) {
-                        this.sendNotification({
-                            id: message.id,
-                            to: message.from,
-                            event: Lime.NotificationEvent.FAILED,
-                            reason: {
-                                code: 101,
-                                description: e.message
-                            }
-                        });
-                    }
-                }
-            });
-        };
-        this._clientChannel.onNotification = (notification) =>
-            this._notificationReceivers
-                .forEach((receiver) => receiver.predicate(notification) && receiver.callback(notification));
-        this._clientChannel.onCommand = (c) => (this._commandResolves[c.id] || identity)(c);
+        
+        this._uri = uri;        
+        this._transportFactory = transportFactory;
+        this._transport = transportFactory();
+        this._initializeClientChannel();
     }
 
     // connectWithGuest :: String -> String -> Promise Session
@@ -87,6 +62,44 @@ export default class MessagingHubClient {
             .then((session) => this._sendReceiptsCommand().then(() => session));
     }
 
+    _initializeClientChannel() {
+        this._transport.onClose = () => {
+            //try to reconnect in 5 seconds
+            setTimeout(() => {
+                this._transport = this._transportFactory();                 
+                this._initializeClientChannel();
+            }, 
+            5000);
+        };
+        this._clientChannel = new Lime.ClientChannel(this._transport, true, true);
+
+        this._clientChannel.onMessage = (message) => {
+            this._messageReceivers.forEach((receiver) => {
+                if (receiver.predicate(message)) {
+                    try {
+                        this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
+                        receiver.callback(message);
+                        this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
+                    } catch(e) {
+                        this.sendNotification({
+                            id: message.id,
+                            to: message.from,
+                            event: Lime.NotificationEvent.FAILED,
+                            reason: {
+                                code: 101,
+                                description: e.message
+                            }
+                        });
+                    }
+                }
+            });
+        };
+        this._clientChannel.onNotification = (notification) =>
+            this._notificationReceivers
+                .forEach((receiver) => receiver.predicate(notification) && receiver.callback(notification));
+        this._clientChannel.onCommand = (c) => (this._commandResolves[c.id] || identity)(c);        
+    }
+    
     _sendPresenceCommand() {
         // TODO: use default Lime solution for Presences when available
         return this.sendCommand({

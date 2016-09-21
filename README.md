@@ -40,7 +40,7 @@ Or you can also use the script served by [unpkg](https://unpkg.com):
 var client = new MessagingHubClient(uri, transport);
 
 // e.g.
-var client = new MessagingHubClient('ws://msging.net:8081', new Lime.WebSocketTransport());
+var client = new MessagingHubClient('ws://msging.net:8081', function() { return new Lime.WebSocketTransport() });
 ```
 
 #### Transport packages
