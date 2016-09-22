@@ -1,6 +1,6 @@
 {
   "name": "messaginghub-client",
-  "description": "Simple messaging mub client.",
+  "description": "Simple Messaging Hub client.",
   "main": "dist/messaginghub-client.js",
   "files": [
     "dist/messaginghub-client.js"
