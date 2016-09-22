@@ -102,15 +102,15 @@ export default class MessagingHubClient {
             }, 5000);
         };
 
-        this._clientChannel = new Lime.ClientChannel(this._transport, true, true);
+        this._clientChannel = new Lime.ClientChannel(this._transport, true, false);
 
         this._clientChannel.onMessage = (message) => {
-            this._messageReceivers.forEach((receiver) => {
+            this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
+
+            var hasError = this._messageReceivers.some((receiver) => {
                 if (receiver.predicate(message)) {
                     try {
-                        this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
                         receiver.callback(message);
-                        this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
                     } catch (e) {
                         this.sendNotification({
                             id: message.id,
@@ -121,9 +121,15 @@ export default class MessagingHubClient {
                                 description: e.message
                             }
                         });
+
+                        return true;
                     }
                 }
             });
+
+            if (!hasError) {
+                this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
+            }
         };
         this._clientChannel.onNotification = (notification) =>
             this._notificationReceivers
