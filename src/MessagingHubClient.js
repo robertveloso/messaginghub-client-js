@@ -15,8 +15,8 @@ export default class MessagingHubClient {
         this._listening = false;
 
         this._uri = uri;
-        this._transportFactory = transportFactory;
-        this._transport = transportFactory();
+        this._transportFactory = typeof transportFactory === 'function' ? transportFactory : () => transportFactory;
+        this._transport = this._transportFactory();
         this._initializeClientChannel();
     }
 
@@ -77,15 +77,17 @@ export default class MessagingHubClient {
 
     _initializeClientChannel() {
         this._transport.onError = () => {
-            throw new Error('ERROR');
             this._listening = false;
         };
+        this._transport.onClose = () => {
+            this._listening = false;
+            //try to reconnect in 5 seconds
+            setTimeout(() => {
+                this._transport = this._transportFactory();
+                this._initializeClientChannel();
+            }, 5000);
+        };
 
-        Object.defineProperty(this._transport, 'onClose', function () {
-            throw new Error('ERROR');
-        });
-
-        console.log(this._transport);
         this._clientChannel = new Lime.ClientChannel(this._transport, true, true);
 
         this._clientChannel.onMessage = (message) => {

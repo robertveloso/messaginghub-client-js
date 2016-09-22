@@ -32,44 +32,26 @@ describe('MessagingHubClient', function () {
     });
 
     afterEach((done) => {
-        try {
-            this.client.close().then(() => done());
-        } catch (err) {
-        }
+        this.client.close().then(() => done());
     });
 
+    //
     it('should connect returning a promise', (done) => {
         this.client.listening.should.equal(false);
         this.client.connectWithGuest('guest').then(() => {
             this.client.listening.should.equal(true);
-            done(); 
+            done();
         });
     });
-
-    //
-    it('should reconnect after 5 secs', (done) => {
-        let server = new TcpLimeServer();
-        server.listen(8125).then(() => {
-            let client = buildClient('127.0.0.1:8125');
-            client.connectWithGuest('guest')
-                .then(() => {
-                    client.listening.should.equal(true);
-                    server.close();
-                    setTimeout(() => {
-                        client.listening.should.equal(false);
-                        server = new TcpLimeServer();
-                        server.listen(8125)
-                            .then(() => {
-                                setTimeout(() => {
-                                    client.listening.should.equal(false);
-                                    done();
-                                }, 5000);
-                            });
-                    }, 1000);
-                });
+    
+    it('should connect when creating with transport instance', (done) => {
+        this.client =  new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        this.client.listening.should.equal(false);
+        this.client.connectWithGuest('guest').then(() => {
+            this.client.listening.should.equal(true);
+            done();
         });
     });
-
 
     it('should connect with plain authentication converting to a base64 password', (done) => {
         const clientWithoutIdentifier = buildClient();
