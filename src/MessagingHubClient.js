@@ -13,6 +13,7 @@ export default class MessagingHubClient {
         this._notificationReceivers = [];
         this._commandResolves = {};
         this._listening = false;
+        this._routingRule = 'identity';
 
         this._uri = uri;
         this._transportFactory = typeof transportFactory === 'function' ? transportFactory : () => transportFactory;
@@ -38,9 +39,10 @@ export default class MessagingHubClient {
     }
 
     // connectWithPassword :: String -> String -> Promise Session
-    connectWithPassword(identifier, password) {
+    connectWithPassword(identifier, password, routingRule) {
         if (!identifier) throw new Error('The identifier is required');
         if (!password) throw new Error('The password is required');
+        this._routingRule = routingRule || this._routingRule;
         return this._transport
             .open(this.uri)
             .then(() => {
@@ -57,9 +59,10 @@ export default class MessagingHubClient {
     }
 
     // connectWithKey :: String -> String -> Promise Session
-    connectWithKey(identifier, key) {
+    connectWithKey(identifier, key, routingRule) {
         if (!identifier) throw new Error('The identifier is required');
         if (!key) throw new Error('The key is required');
+        this._routingRule = routingRule || this._routingRule;
         return this._transport
             .open(this.uri)
             .then(() => {
@@ -126,7 +129,7 @@ export default class MessagingHubClient {
             type: 'application/vnd.lime.presence+json',
             resource: {
                 status: 'available',
-                routingRule: 'identity'
+                routingRule: this._routingRule
             }
         });
     }
