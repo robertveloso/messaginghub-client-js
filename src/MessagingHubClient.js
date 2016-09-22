@@ -12,8 +12,9 @@ export default class MessagingHubClient {
         this._messageReceivers = [];
         this._notificationReceivers = [];
         this._commandResolves = {};
-        
-        this._uri = uri;        
+        this._listening = false;
+
+        this._uri = uri;
         this._transportFactory = transportFactory;
         this._transport = transportFactory();
         this._initializeClientChannel();
@@ -29,7 +30,11 @@ export default class MessagingHubClient {
                 return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
             })
             .then((session) => this._sendPresenceCommand().then(() => session))
-            .then((session) => this._sendReceiptsCommand().then(() => session));
+            .then((session) => this._sendReceiptsCommand().then(() => session))
+            .then((session) => {
+                this._listening = true;
+                return session;
+            });
     }
 
     // connectWithPassword :: String -> String -> Promise Session
@@ -44,7 +49,11 @@ export default class MessagingHubClient {
                 return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
             })
             .then((session) => this._sendPresenceCommand().then(() => session))
-            .then((session) => this._sendReceiptsCommand().then(() => session));
+            .then((session) => this._sendReceiptsCommand().then(() => session))
+            .then((session) => {
+                this._listening = true;
+                return session;
+            });
     }
 
     // connectWithKey :: String -> String -> Promise Session
@@ -59,18 +68,24 @@ export default class MessagingHubClient {
                 return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
             })
             .then((session) => this._sendPresenceCommand().then(() => session))
-            .then((session) => this._sendReceiptsCommand().then(() => session));
+            .then((session) => this._sendReceiptsCommand().then(() => session))
+            .then((session) => {
+                this._listening = true;
+                return session;
+            });
     }
 
     _initializeClientChannel() {
-        this._transport.onClose = () => {
-            //try to reconnect in 5 seconds
-            setTimeout(() => {
-                this._transport = this._transportFactory();                 
-                this._initializeClientChannel();
-            }, 
-            5000);
+        this._transport.onError = () => {
+            throw new Error('ERROR');
+            this._listening = false;
         };
+
+        Object.defineProperty(this._transport, 'onClose', function () {
+            throw new Error('ERROR');
+        });
+
+        console.log(this._transport);
         this._clientChannel = new Lime.ClientChannel(this._transport, true, true);
 
         this._clientChannel.onMessage = (message) => {
@@ -80,7 +95,7 @@ export default class MessagingHubClient {
                         this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
                         receiver.callback(message);
                         this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
-                    } catch(e) {
+                    } catch (e) {
                         this.sendNotification({
                             id: message.id,
                             to: message.from,
@@ -97,9 +112,9 @@ export default class MessagingHubClient {
         this._clientChannel.onNotification = (notification) =>
             this._notificationReceivers
                 .forEach((receiver) => receiver.predicate(notification) && receiver.callback(notification));
-        this._clientChannel.onCommand = (c) => (this._commandResolves[c.id] || identity)(c);        
+        this._clientChannel.onCommand = (c) => (this._commandResolves[c.id] || identity)(c);
     }
-    
+
     _sendPresenceCommand() {
         // TODO: use default Lime solution for Presences when available
         return this.sendCommand({
@@ -197,5 +212,13 @@ export default class MessagingHubClient {
 
     clearNotificationReceivers() {
         this._notificationReceivers = [];
+    }
+
+    get listening() {
+        return this._listening;
+    }
+
+    get transport() {
+        return this._transport;
     }
 }

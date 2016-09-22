@@ -8,7 +8,13 @@ import TcpLimeServer from './helpers/TcpLimeServer';
 
 require('chai').should();
 
-describe('MessagingHubClient', function() {
+describe('MessagingHubClient', function () {
+
+    function buildClient(address) {
+        return new MessagingHubClient(address || '127.0.0.1:8124', () => new TcpTransport());
+    }
+
+    this.timeout(7000);
 
     //
     before((done) => {
@@ -22,37 +28,64 @@ describe('MessagingHubClient', function() {
 
     //
     beforeEach(() => {
-        this.transport = new TcpTransport();
-        this.client = new MessagingHubClient('127.0.0.1:8124', this.transport);
+        this.client = buildClient();
     });
 
     afterEach((done) => {
-        this.client.close().then(() => done());
+        try {
+            this.client.close().then(() => done());
+        } catch (err) {
+        }
+    });
+
+    it('should connect returning a promise', (done) => {
+        this.client.listening.should.equal(false);
+        this.client.connectWithGuest('guest').then(() => {
+            this.client.listening.should.equal(true);
+            done(); 
+        });
     });
 
     //
-    it('should connect returning a promise', (done) => {
-        const clientWithoutIdentifier = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
-        clientWithoutIdentifier.connectWithGuest.bind(clientWithoutIdentifier).should.throw(Error);
-
-        this.client.connectWithGuest('guest').then(() => done());
+    it('should reconnect after 5 secs', (done) => {
+        let server = new TcpLimeServer();
+        server.listen(8125).then(() => {
+            let client = buildClient('127.0.0.1:8125');
+            client.connectWithGuest('guest')
+                .then(() => {
+                    client.listening.should.equal(true);
+                    server.close();
+                    setTimeout(() => {
+                        client.listening.should.equal(false);
+                        server = new TcpLimeServer();
+                        server.listen(8125)
+                            .then(() => {
+                                setTimeout(() => {
+                                    client.listening.should.equal(false);
+                                    done();
+                                }, 5000);
+                            });
+                    }, 1000);
+                });
+        });
     });
 
+
     it('should connect with plain authentication converting to a base64 password', (done) => {
-        const clientWithoutIdentifier = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        const clientWithoutIdentifier = buildClient();
         clientWithoutIdentifier.connectWithPassword.bind(clientWithoutIdentifier).should.throw(Error);
 
-        const clientWithoutPassword = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        const clientWithoutPassword = buildClient();
         clientWithoutPassword.connectWithPassword.bind(clientWithoutPassword, 'test2').should.throw(Error);
 
         this.client.connectWithPassword('test', '123456').then(() => done());
     });
 
     it('should connect with key authentication', (done) => {
-        const clientWithoutIdentifier = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        const clientWithoutIdentifier = buildClient();
         clientWithoutIdentifier.connectWithKey.bind(clientWithoutIdentifier).should.throw(Error);
 
-        const clientWithoutKey = new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        const clientWithoutKey = buildClient();
         clientWithoutKey.connectWithKey.bind(clientWithoutKey, 'dGVzdHQy').should.throw(Error);
 
         this.client.connectWithKey('testKey', 'YWJjZGVm').then(() => done());
@@ -70,7 +103,7 @@ describe('MessagingHubClient', function() {
                     routingRule: 'identity'
                 }
             });
-            this.server._onPresenceCommand = () => {};
+            this.server._onPresenceCommand = () => { };
             done();
         };
 
@@ -94,7 +127,7 @@ describe('MessagingHubClient', function() {
                     ]
                 }
             });
-            this.server._onReceiptCommand = () => {};
+            this.server._onReceiptCommand = () => { };
             done();
         };
 
