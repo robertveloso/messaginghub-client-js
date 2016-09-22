@@ -16,7 +16,7 @@ const MESSAGINGHUB_ENDPOINT = 'ws://msging.net:8081';
 const API_ENDPOINT = 'http://randomword.setgetgo.com/get.php';
 
 // instantiate and setup client
-let client = new MessagingHubClient(MESSAGINGHUB_ENDPOINT, new WebSocketTransport());
+let client = new MessagingHubClient(MESSAGINGHUB_ENDPOINT, () => new WebSocketTransport());
 
 client.addMessageReceiver(() => true, (m) => {
     if (m.type !== 'text/plain') return;

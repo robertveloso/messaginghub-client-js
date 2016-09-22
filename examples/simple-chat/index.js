@@ -29,9 +29,9 @@
     var uri;
 
     function createClient(uri, identity, password){
-        messagingHubClient = new MessagingHubClient(uri, new WebSocketTransport(true));
+        messagingHubClient = new MessagingHubClient(uri, () => new WebSocketTransport(true));
         messagingHubClient
-            .connect(identity, password)
+            .connectWithPassword(identity, password)
             .then(setConnectedState)
             .catch(function(err) {
                 utils.logMessage('An error occurred: ' + err);
