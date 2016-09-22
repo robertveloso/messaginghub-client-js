@@ -1,7 +1,7 @@
 # simple-chat
-> An ugly page to send and receive basic messages using the MessagingHub platform
+> An ugly page to send and receive basic messages using the Blip platform
 
-This example demonstrates the use of the `messaginghub-client-js` library to build a simple bot which runs on the [MessagingHub](http://omni.messaginghub.io) platform.
+This example demonstrates the use of the `messaginghub-client-js` library to build a simple bot which runs on the [Blip](http://blip.ai) platform.
 
 ## How to run
 In order to run this example, simply open the `index.html` file on this folder.
