@@ -7,7 +7,6 @@
   ],
   "scripts": {
     "commit": "./node_modules/.bin/git-cz",
-    "prebundle": "rm -rf dist && mkdir dist",
     "bundle": "./node_modules/.bin/webpack",
     "lint": "./node_modules/.bin/eslint .",
     "test": "./node_modules/.bin/mocha ./test --recursive --compilers js:babel-core/register -w",
