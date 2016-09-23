@@ -11,7 +11,9 @@ export default class TcpTransport {
     constructor(traceEnabled) {
         this._traceEnabled = traceEnabled;
         this._socket = new net.Socket();
-        this._socket.on('close', this.onClose);
+        this._socket.on('close', () => this.onClose());
+        this._socket.on('end', () => this.onClose());
+        this._socket.on('error', () =>  this.onError());
         this._socket.on('data', (e) => {
             if (this._traceEnabled) {
                 logger('TcpTransport RECEIVE: ' + e.toString());
