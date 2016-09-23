@@ -13,6 +13,7 @@ export default class MessagingHubClient {
         this._notificationReceivers = [];
         this._commandResolves = {};
         this._listening = false;
+        this._closing = false;
         this._routingRule = 'identity';
 
         this._uri = uri;
@@ -26,6 +27,7 @@ export default class MessagingHubClient {
     connectWithGuest(identifier) {
         if (!identifier) throw new Error('The identifier is required');
         this._connect = () => {
+            this._closing = false;
             return this._transport
                 .open(this.uri)
                 .then(() => {
@@ -48,6 +50,7 @@ export default class MessagingHubClient {
         if (!password) throw new Error('The password is required');
         this._routingRule = routingRule || this._routingRule;
         this._connect = () => {
+            this._closing = false;
             return this._transport
                 .open(this.uri)
                 .then(() => {
@@ -71,6 +74,7 @@ export default class MessagingHubClient {
         if (!key) throw new Error('The key is required');
         this._routingRule = routingRule || this._routingRule;
         this._connect = () => {
+            this._closing = false;
             return this._transport
                 .open(this.uri)
                 .then(() => {
@@ -96,21 +100,23 @@ export default class MessagingHubClient {
             this._listening = false;
             //try to reconnect in 5 seconds
             setTimeout(() => {
-                this._transport = this._transportFactory();
-                this._initializeClientChannel();
-                this._connect();
+                if (!this._closing) {
+                    this._transport = this._transportFactory();
+                    this._initializeClientChannel();
+                    this._connect();
+                }
             }, 5000);
         };
 
-        this._clientChannel = new Lime.ClientChannel(this._transport, true, true);
+        this._clientChannel = new Lime.ClientChannel(this._transport, true, false);
 
         this._clientChannel.onMessage = (message) => {
-            this._messageReceivers.forEach((receiver) => {
+            this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
+
+            var hasError = this._messageReceivers.some((receiver) => {
                 if (receiver.predicate(message)) {
                     try {
-                        this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
                         receiver.callback(message);
-                        this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
                     } catch (e) {
                         this.sendNotification({
                             id: message.id,
@@ -121,9 +127,15 @@ export default class MessagingHubClient {
                                 description: e.message
                             }
                         });
+
+                        return true;
                     }
                 }
             });
+
+            if (!hasError) {
+                this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
+            }
         };
         this._clientChannel.onNotification = (notification) =>
             this._notificationReceivers
@@ -166,6 +178,7 @@ export default class MessagingHubClient {
 
     // close :: Promise ()
     close() {
+        this._closing = true;
         return this._clientChannel.sendFinishingSession();
     }
 
