@@ -13,6 +13,7 @@ export default class MessagingHubClient {
         this._notificationReceivers = [];
         this._commandResolves = {};
         this._listening = false;
+        this._closing = false;
         this._routingRule = 'identity';
 
         this._uri = uri;
@@ -26,6 +27,7 @@ export default class MessagingHubClient {
     connectWithGuest(identifier) {
         if (!identifier) throw new Error('The identifier is required');
         this._connect = () => {
+            this._closing = false;
             return this._transport
                 .open(this.uri)
                 .then(() => {
@@ -48,6 +50,7 @@ export default class MessagingHubClient {
         if (!password) throw new Error('The password is required');
         this._routingRule = routingRule || this._routingRule;
         this._connect = () => {
+            this._closing = false;
             return this._transport
                 .open(this.uri)
                 .then(() => {
@@ -71,6 +74,7 @@ export default class MessagingHubClient {
         if (!key) throw new Error('The key is required');
         this._routingRule = routingRule || this._routingRule;
         this._connect = () => {
+            this._closing = false;
             return this._transport
                 .open(this.uri)
                 .then(() => {
@@ -96,9 +100,11 @@ export default class MessagingHubClient {
             this._listening = false;
             //try to reconnect in 5 seconds
             setTimeout(() => {
-                this._transport = this._transportFactory();
-                this._initializeClientChannel();
-                this._connect();
+                if (!this._closing) {
+                    this._transport = this._transportFactory();
+                    this._initializeClientChannel();
+                    this._connect();
+                }
             }, 5000);
         };
 
@@ -172,6 +178,7 @@ export default class MessagingHubClient {
 
     // close :: Promise ()
     close() {
+        this._closing = true;
         return this._clientChannel.sendFinishingSession();
     }
 

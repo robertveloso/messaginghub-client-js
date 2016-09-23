@@ -30,13 +30,6 @@
 
     function createClient(uri, identity, password){
         messagingHubClient = new MessagingHubClient(uri, () => new WebSocketTransport(true));
-        messagingHubClient
-            .connectWithPassword(identity, password)
-            .then(setConnectedState)
-            .catch(function(err) {
-                utils.logMessage('An error occurred: ' + err);
-                return;
-            });
 
         messagingHubClient.addMessageReceiver(null, function(message) {
             utils.logLimeMessage(message, 'Message received');
@@ -45,6 +38,14 @@
         messagingHubClient.addNotificationReceiver(null, function(notification) {
             utils.logLimeNotification(notification, 'Notification received');
         });
+
+        setConnectedState();
+        messagingHubClient
+            .connectWithPassword(identity, password)
+            .catch(function(err) {
+                utils.logMessage('An error occurred: ' + err);
+                return;
+            });        
     }
 
     function setConnectedState() {
