@@ -13,7 +13,10 @@ export default class MessagingHubClient {
         this._notificationReceivers = [];
         this._commandResolves = {};
         this._listening = false;
-        this._routingRule = 'identity';
+        this._presence = {
+            status: 'available',
+            routingRule: 'identity'
+        };
 
         this._uri = uri;
         this._transportFactory = typeof transportFactory === 'function' ? transportFactory : () => transportFactory;
@@ -43,10 +46,10 @@ export default class MessagingHubClient {
     }
 
     // connectWithPassword :: String -> String -> Promise Session
-    connectWithPassword(identifier, password, routingRule) {
+    connectWithPassword(identifier, password, presence) {
         if (!identifier) throw new Error('The identifier is required');
         if (!password) throw new Error('The password is required');
-        this._routingRule = routingRule || this._routingRule;
+        this._presence = presence || this._presence;
         this._connect = () => {
             return this._transport
                 .open(this.uri)
@@ -66,10 +69,10 @@ export default class MessagingHubClient {
     }
 
     // connectWithKey :: String -> String -> Promise Session
-    connectWithKey(identifier, key, routingRule) {
+    connectWithKey(identifier, key, presence) {
         if (!identifier) throw new Error('The identifier is required');
         if (!key) throw new Error('The key is required');
-        this._routingRule = routingRule || this._routingRule;
+        this._presence = presence || this._presence;
         this._connect = () => {
             return this._transport
                 .open(this.uri)
@@ -144,10 +147,7 @@ export default class MessagingHubClient {
             method: Lime.CommandMethod.SET,
             uri: '/presence',
             type: 'application/vnd.lime.presence+json',
-            resource: {
-                status: 'available',
-                routingRule: this._routingRule
-            }
+            resource: this._presence
         });
     }
 
