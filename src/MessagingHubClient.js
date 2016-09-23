@@ -17,30 +17,20 @@ export default class MessagingHubClient {
             status: 'available',
             routingRule: 'identity'
         };
+        this._closing = false;
 
         this._uri = uri;
         this._transportFactory = typeof transportFactory === 'function' ? transportFactory : () => transportFactory;
         this._transport = this._transportFactory();
-        this._connect = () => { };
         this._initializeClientChannel();
     }
 
     // connectWithGuest :: String -> String -> Promise Session
     connectWithGuest(identifier) {
         if (!identifier) throw new Error('The identifier is required');
-        this._connect = () => {
-            return this._transport
-                .open(this.uri)
-                .then(() => {
-                    let authentication = new Lime.GuestAuthentication();
-                    return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
-                })
-                .then((session) => this._sendPresenceCommand().then(() => session))
-                .then((session) => this._sendReceiptsCommand().then(() => session))
-                .then((session) => {
-                    this._listening = true;
-                    return session;
-                });
+        this._establishSession = () => {
+            let authentication = new Lime.GuestAuthentication();
+            return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
         };
         return this._connect();
     }
@@ -50,20 +40,10 @@ export default class MessagingHubClient {
         if (!identifier) throw new Error('The identifier is required');
         if (!password) throw new Error('The password is required');
         this._presence = presence || this._presence;
-        this._connect = () => {
-            return this._transport
-                .open(this.uri)
-                .then(() => {
-                    let authentication = new Lime.PlainAuthentication();
-                    authentication.password = Base64.encode(password);
-                    return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
-                })
-                .then((session) => this._sendPresenceCommand().then(() => session))
-                .then((session) => this._sendReceiptsCommand().then(() => session))
-                .then((session) => {
-                    this._listening = true;
-                    return session;
-                });
+        this._establishSession = () => {
+            let authentication = new Lime.PlainAuthentication();
+            authentication.password = Base64.encode(password);
+            return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
         };
         return this._connect();
     }
@@ -73,35 +53,24 @@ export default class MessagingHubClient {
         if (!identifier) throw new Error('The identifier is required');
         if (!key) throw new Error('The key is required');
         this._presence = presence || this._presence;
-        this._connect = () => {
-            return this._transport
-                .open(this.uri)
-                .then(() => {
-                    let authentication = new Lime.KeyAuthentication();
-                    authentication.key = key;
-                    return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
-                })
-                .then((session) => this._sendPresenceCommand().then(() => session))
-                .then((session) => this._sendReceiptsCommand().then(() => session))
-                .then((session) => {
-                    this._listening = true;
-                    return session;
-                });
+        this._establishSession = () => {
+            let authentication = new Lime.KeyAuthentication();
+            authentication.key = key;
+            return this._clientChannel.establishSession(Lime.SessionEncryption.NONE, Lime.SessionCompression.NONE, identifier + '@msging.net', authentication, '');
         };
         return this._connect();
     }
 
     _initializeClientChannel() {
-        this._transport.onError = () => {
-            this._listening = false;
-        };
         this._transport.onClose = () => {
             this._listening = false;
             //try to reconnect in 5 seconds
             setTimeout(() => {
-                this._transport = this._transportFactory();
-                this._initializeClientChannel();
-                this._connect();
+                if (!this._closing) {
+                    this._transport = this._transportFactory();
+                    this._initializeClientChannel();
+                    this._connect();
+                }
             }, 5000);
         };
 
@@ -172,6 +141,7 @@ export default class MessagingHubClient {
 
     // close :: Promise ()
     close() {
+        this._closing = true;
         return this._clientChannel.sendFinishingSession();
     }
 
@@ -240,7 +210,17 @@ export default class MessagingHubClient {
         return this._listening;
     }
 
-    get transport() {
-        return this._transport;
+    _connect() {
+        this._closing = false;
+        return this
+            ._transport
+            .open(this.uri)
+            .then(this._establishSession.bind(this))
+            .then((session) => this._sendPresenceCommand().then(() => session))
+            .then((session) => this._sendReceiptsCommand().then(() => session))
+            .then((session) => {
+                this._listening = true;
+                return session;
+            });
     }
 }

@@ -14,36 +14,54 @@ describe('MessagingHubClient', function () {
         return new MessagingHubClient(address || '127.0.0.1:8124', () => new TcpTransport());
     }
 
-    this.timeout(7000);
-
     //
-    before((done) => {
+    beforeEach((done) => {
         this.server = new TcpLimeServer();
-        this.server.listen(8124).then(done);
-    });
-
-    after(() => {
-        this.server.close();
-    });
-
-    //
-    beforeEach(() => {
-        this.client = buildClient();
+        this.server.listen(8124)
+            .then(() => this.client = buildClient())
+            .then(() => done());
     });
 
     afterEach((done) => {
-        this.client.close().then(() => done());
+        this.client.close()
+            .then(() => this.server.close())
+            .then(() => done());
     });
 
     //
     it('should connect returning a promise', (done) => {
+        const clientWithoutIdentifier = buildClient();
+        clientWithoutIdentifier.connectWithGuest.bind(clientWithoutIdentifier).should.throw(Error);
+
         this.client.listening.should.equal(false);
         this.client.connectWithGuest('guest').then(() => {
             this.client.listening.should.equal(true);
             done();
         });
     });
-    
+
+    this.timeout(7000);
+
+    it('should reconnect after 5 secs', (done) => {
+        this.client.connectWithGuest('guest')
+            .then(() => {
+                this.client.listening.should.equal(true);
+                this.server.close();
+                setTimeout(() => {
+                    this.client.listening.should.equal(false);
+                    this.server.listen(8124)
+                        .then(() => {
+                            setTimeout(() => {
+                                this.client.listening.should.equal(true);
+                                done();
+                            }, 5000);
+                        });
+                }, 1000);
+            });
+    });
+
+    this.timeout(2000);
+
     it('should connect when creating with transport instance', (done) => {
         this.client =  new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
         this.client.listening.should.equal(false);

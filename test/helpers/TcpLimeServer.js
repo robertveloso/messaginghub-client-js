@@ -12,7 +12,10 @@ export default class TcpLimeServer {
         this._connections = [];
 
         this.listen = Promise.promisify(this._server.listen, {context: this._server});
-        this.close = Promise.promisify(this._server.close, {context: this._server});
+        this.close = Promise.promisify((callback) => {
+            this._connections.forEach(socket => socket.end());
+            this._server.close(callback);
+        }, {context: this._server});
     }
 
     broadcast(envelope) {
