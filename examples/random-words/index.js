@@ -3,21 +3,22 @@
 
 let Lime = require('lime-js');
 let WebSocketTransport = require('lime-transport-websocket');
-let MessagingHubClient = require('messaginghub-client');
+let MessagingHub = require('../../dist/messaginghub-client.js');
 let request = require('request-promise');
 
 // These are the MessagingHub credentials for this bot.
 // If you want to create your own bot, see http://blip.ai
 const IDENTIFIER = 'randomwords';
 const ACCESS_KEY = 'aklFSmllSER1b25VakRKOXp3eFE=';
-
-const MESSAGINGHUB_ENDPOINT = 'ws://msging.net:8081';
-
 const API_ENDPOINT = 'http://randomword.setgetgo.com/get.php';
 
 // instantiate and setup client
-let client = new MessagingHubClient(MESSAGINGHUB_ENDPOINT, () => new WebSocketTransport());
-
+let client = new MessagingHub.ClientBuilder()
+    .withIdentifier(IDENTIFIER)
+    .withAccessKey(ACCESS_KEY)
+    .withScheme('ws')
+    .build();
+    
 client.addMessageReceiver(() => true, (m) => {
     if (m.type !== 'text/plain') return;
 
@@ -46,6 +47,6 @@ client.addMessageReceiver(() => true, (m) => {
 });
 
 // connect to the MessagingHub server
-client.connectWithKey(IDENTIFIER, ACCESS_KEY)
+client.connect()
     .then(() => console.log('Listening...'))
     .catch((err) => console.error(err));

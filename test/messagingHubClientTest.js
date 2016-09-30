@@ -2,16 +2,16 @@
 
 /*eslint-env node, mocha */
 
-import MessagingHubClient from '../src/MessagingHubClient';
+import Client from '../src/Client';
 import TcpTransport from './helpers/TcpTransport';
 import TcpLimeServer from './helpers/TcpLimeServer';
 
 require('chai').should();
 
-describe('MessagingHubClient', function () {
+describe('Client', function () {
 
     function buildClient(address) {
-        return new MessagingHubClient(address || '127.0.0.1:8124', () => new TcpTransport());
+        return new Client(address || '127.0.0.1:8124', () => new TcpTransport());
     }
 
     //
@@ -63,7 +63,7 @@ describe('MessagingHubClient', function () {
     this.timeout(2000);
 
     it('should connect when creating with transport instance', (done) => {
-        this.client =  new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        this.client =  new Client('127.0.0.1:8124', new TcpTransport());
         this.client.listening.should.equal(false);
         this.client.connectWithGuest('guest').then(() => {
             this.client.listening.should.equal(true);
@@ -71,14 +71,14 @@ describe('MessagingHubClient', function () {
         });
     });
 
-    it('should connect with plain authentication converting to a base64 password', (done) => {
+    it('should connect with plain authentication', (done) => {
         const clientWithoutIdentifier = buildClient();
         clientWithoutIdentifier.connectWithPassword.bind(clientWithoutIdentifier).should.throw(Error);
 
         const clientWithoutPassword = buildClient();
         clientWithoutPassword.connectWithPassword.bind(clientWithoutPassword, 'test2').should.throw(Error);
 
-        this.client.connectWithPassword('test', '123456').then(() => done());
+        this.client.connectWithPassword('test', 'MTIzNDU2').then(() => done());
     });
 
     it('should connect with key authentication', (done) => {
