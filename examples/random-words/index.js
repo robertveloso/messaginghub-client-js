@@ -2,7 +2,6 @@
 'use strict';
 
 let Lime = require('lime-js');
-let WebSocketTransport = require('lime-transport-websocket');
 let MessagingHub = require('../../dist/messaginghub-client.js');
 let request = require('request-promise');
 
