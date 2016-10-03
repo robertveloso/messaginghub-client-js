@@ -70,14 +70,14 @@ export default class Client {
             .then((session) => this._sendPresenceCommand().then(() => session))
             .then((session) => this._sendReceiptsCommand().then(() => session))
             .then((session) => {
-                this.listening(true);
+                this.listening = true;
                 return session;
             });
     }
 
     _initializeClientChannel() {
         this._transport.onClose = () => {
-            this.listening(false);
+            this.listening = false;
             // try to reconnect in 1 second
             setTimeout(() => {
                 if (!this._closing) {
@@ -225,7 +225,7 @@ export default class Client {
     set listening(listening) {
         this._listening = listening;
         if (this.onListeningChanged) {
-            this.onListeningChanged(this);
+            this.onListeningChanged(listening, this);
         }
     }
 
