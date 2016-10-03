@@ -4,7 +4,7 @@ import Application from './Application';
 const identity = (x) => x;
 
 export default class Client {    
-    // MessagingHubClient :: String -> Transport? -> MessagingHubClient
+    // Client :: String -> Transport? -> Client
     constructor(uri, transportFactory, application) {
         let defaultApplication = new Application();
         if (application) {
@@ -22,7 +22,7 @@ export default class Client {
         this._closing = false;
         this._uri = uri;
         this._transportFactory = typeof transportFactory === 'function' ? transportFactory : () => transportFactory;
-        this._transport = this._transportFactory();
+        this._transport = this._transportFactory();        
         this._initializeClientChannel();
     }
 
@@ -70,22 +70,22 @@ export default class Client {
             .then((session) => this._sendPresenceCommand().then(() => session))
             .then((session) => this._sendReceiptsCommand().then(() => session))
             .then((session) => {
-                this._listening = true;
+                this.listening(true);
                 return session;
             });
     }
 
     _initializeClientChannel() {
         this._transport.onClose = () => {
-            this._listening = false;
-            //try to reconnect in 5 seconds
+            this.listening(false);
+            // try to reconnect in 1 second
             setTimeout(() => {
                 if (!this._closing) {
                     this._transport = this._transportFactory();
                     this._initializeClientChannel();
                     this.connect();
                 }
-            }, 5000);
+            }, 1000);
         };
 
         this._clientChannel = new Lime.ClientChannel(this._transport, true, false);
@@ -220,6 +220,13 @@ export default class Client {
 
     get listening() {
         return this._listening;
+    }
+
+    set listening(listening) {
+        this._listening = listening;
+        if (this.onListeningChanged) {
+            this.onListeningChanged(this);
+        }
     }
 
     get uri() { return this._uri; }

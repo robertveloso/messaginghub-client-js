@@ -25,19 +25,19 @@ export default class ClientBuilder {
         return this;
     }
     
-    // withDomain :: String -> MessagingHubClient
+    // withDomain :: String -> ClientBuilder
     withDomain(domain) {
         this._application.domain = domain;
         return this;
     }
 
-    // withScheme :: String -> MessagingHubClient
+    // withScheme :: String -> ClientBuilder
     withScheme(scheme) {
         this._application.scheme = scheme;
         return this;
     }
 
-    // withHostName :: String -> MessagingHubClient
+    // withHostName :: String -> ClientBuilder
     withHostName(hostName) {
         this._application.hostName = hostName;
         return this;
@@ -59,13 +59,13 @@ export default class ClientBuilder {
         return this;
     }
 
-    // withCompression :: Lime.SessionCompression.NONE -> MessagingHubClient
+    // withCompression :: Lime.SessionCompression.NONE -> ClientBuilder
     withCompression(compression) {
         this._application.compression = compression;
         return this;
     }
 
-    // withEncryption :: Lime.SessionEncryption.NONE -> MessagingHubClient
+    // withEncryption :: Lime.SessionEncryption.NONE -> ClientBuilder
     withEncryption(encryption) {
         this._application.encryption = encryption;
         return this;

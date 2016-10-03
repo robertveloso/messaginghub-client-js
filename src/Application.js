@@ -2,7 +2,8 @@ import Lime from 'lime-js';
 
 /* istanbul ignore next */
 export default class Application {
-    constructor() {        
+    constructor() {
+        // Default values
         this.compression = Lime.SessionCompression.NONE;
         this.encryption = Lime.SessionEncryption.NONE;
         this.instance = 'default';
