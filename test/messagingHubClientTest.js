@@ -107,7 +107,7 @@ describe('Client', function () {
             done();
         };
 
-        this.client.connectWithGuest('guest2');
+        this.client.connectWithPassword('test', 'MTIzNDU2');
     });
 
     it('should automatically send a set receipt command when connecting', (done) => {
@@ -131,7 +131,7 @@ describe('Client', function () {
             done();
         };
 
-        this.client.connectWithGuest('guest2');
+        this.client.connectWithPassword('test', 'MTIzNDU2');
     });
 
     it('should add and remove message listeners', (done) => {

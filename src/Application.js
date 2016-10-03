@@ -1,9 +1,11 @@
 import Lime from 'lime-js';
+import uuid from 'uuid';
 
 /* istanbul ignore next */
 export default class Application {
     constructor() {
         // Default values
+        this.identifier = uuid.v4();
         this.compression = Lime.SessionCompression.NONE;
         this.encryption = Lime.SessionEncryption.NONE;
         this.instance = 'default';

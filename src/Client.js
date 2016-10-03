@@ -122,7 +122,9 @@ export default class Client {
     }
 
     _sendPresenceCommand() {
-        // TODO: use default Lime solution for Presences when available
+        if (this._application.authentication instanceof Lime.GuestAuthentication) {
+            return Promise.resolve();
+        }
         return this.sendCommand({
             id: Lime.Guid(),
             method: Lime.CommandMethod.SET,
@@ -133,7 +135,9 @@ export default class Client {
     }
 
     _sendReceiptsCommand() {
-        // TODO: use default Lime solution for Receipts when available
+        if (this._application.authentication instanceof Lime.GuestAuthentication) {
+            return Promise.resolve();
+        }        
         return this.sendCommand({
             id: Lime.Guid(),
             method: Lime.CommandMethod.SET,
