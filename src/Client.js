@@ -58,6 +58,7 @@ export default class Client {
     
     connect() {
         this._closing = false;
+        this._shouldReconnect = false;
         return this
             ._transport
             .open(this.uri)
@@ -71,6 +72,7 @@ export default class Client {
             .then((session) => this._sendReceiptsCommand().then(() => session))
             .then((session) => {
                 this.listening = true;
+                this._shouldReconnect = true;
                 return session;
             });
     }
@@ -78,14 +80,16 @@ export default class Client {
     _initializeClientChannel() {
         this._transport.onClose = () => {
             this.listening = false;
-            // try to reconnect in 1 second
-            setTimeout(() => {
-                if (!this._closing) {
-                    this._transport = this._transportFactory();
-                    this._initializeClientChannel();
-                    this.connect();
-                }
-            }, 1000);
+            if (this._shouldReconnect) {
+                // try to reconnect in 1 second
+                setTimeout(() => {
+                    if (!this._closing) {
+                        this._transport = this._transportFactory();
+                        this._initializeClientChannel();
+                        this.connect();
+                    }
+                }, 1000);
+            }
         };
 
         this._clientChannel = new Lime.ClientChannel(this._transport, true, false);

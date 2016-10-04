@@ -19,12 +19,6 @@ module.exports = {
             commonjs2: 'bluebird',
             commonjs: 'bluebird',
             amd: 'Promise'
-        },
-        'uuid': {
-            root: 'uuid',
-            commonjs2: 'uuid',
-            commonjs: 'uuid',
-            amd: 'uuid'
         }
     },
     output: {
