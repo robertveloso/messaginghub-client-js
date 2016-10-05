@@ -94,28 +94,32 @@ export default class Client {
 
         this._clientChannel = new Lime.ClientChannel(this._transport, true, false);
         this._clientChannel.onMessage = (message) => {
-            this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
+            if (message.id) {
+                this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
+            }
             var hasError = this._messageReceivers.some((receiver) => {
                 if (receiver.predicate(message)) {
                     try {
                         receiver.callback(message);
                     } catch (e) {
-                        this.sendNotification({
-                            id: message.id,
-                            to: message.from,
-                            event: Lime.NotificationEvent.FAILED,
-                            reason: {
-                                code: 101,
-                                description: e.message
-                            }
-                        });
+                        if (message.id) {
+                            this.sendNotification({
+                                id: message.id,
+                                to: message.from,
+                                event: Lime.NotificationEvent.FAILED,
+                                reason: {
+                                    code: 101,
+                                    description: e.message
+                                }
+                            });
+                        }
 
                         return true;
                     }
                 }
             });
 
-            if (!hasError) {
+            if (!hasError && message.id) {
                 this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
             }
         };

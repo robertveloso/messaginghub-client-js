@@ -265,27 +265,27 @@ describe('Client', function () {
 
     it('should automatically send received notifications for messages', (done) => {
         this.client.addMessageReceiver(() => true, () => true);
-        this.client.addNotificationReceiver('received', () => done());
+        this.client.addNotificationReceiver(n => n.event === 'received' && n.id === '1', () => done());
 
         this.client
             .connectWithKey('test', 'YWJjZGVm')
-            .then(() => this.server.broadcast({ type: 'text/plain', content: 'test' }));
+            .then(() => this.server.broadcast({ id: '1', type: 'text/plain', content: 'test' }));
     });
 
     it('should automatically send consumed notifications for messages when receiver successfully handles it', (done) => {
         this.client.addMessageReceiver(() => true, () => true);
-        this.client.addNotificationReceiver('consumed', () => done());
+        this.client.addNotificationReceiver(n => n.event === 'consumed' && n.id === '1', () => done());
 
         this.client
             .connectWithKey('test', 'YWJjZGVm')
-            .then(() => this.server.broadcast({ type: 'text/plain', content: 'test' }));
+            .then(() => this.server.broadcast({ id: '1', type: 'text/plain', content: 'test' }));
     });
 
     it('should automatically send failed notifications for messages when receiver fails to handle it', (done) => {
         this.client.addMessageReceiver(() => true, () => {
             throw new Error('test error');
         });
-        this.client.addNotificationReceiver('failed', (n) => {
+        this.client.addNotificationReceiver(n => n.event === 'failed' && n.id === '1', (n) => {
             n.reason.code.should.equal(101);
             n.reason.description.should.equal('test error');
             done();
@@ -293,7 +293,7 @@ describe('Client', function () {
 
         this.client
             .connectWithKey('test', 'YWJjZGVm')
-            .then(() => this.server.broadcast({ type: 'text/plain', content: 'test' }));
+            .then(() => this.server.broadcast({ id: '1', type: 'text/plain', content: 'test' }));
     });
 
     it('should send commands and receive a response', (done) => {
