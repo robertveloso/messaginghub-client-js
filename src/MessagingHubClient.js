@@ -160,12 +160,15 @@ export default class MessagingHubClient {
         this._clientChannel.sendCommand(command);
         return new Promise((resolve, reject) => {
             this._commandResolves[command.id] = (c) => {
-                if (c.status && c.status === Lime.CommandStatus.SUCCESS) {
-                    resolve(c);
-                } else {
-                    reject(c);
+                if (c.status) {
+                    if (c.status === Lime.CommandStatus.SUCCESS) {
+                        resolve(c);
+                    } else {
+                        reject(c);
+                    }
+
+                    delete this._commandResolves[command.id];
                 }
-                delete this._commandResolves[command.id];
             };
         });
     }
