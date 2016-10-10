@@ -2,16 +2,16 @@
 
 /*eslint-env node, mocha */
 
-import MessagingHubClient from '../src/MessagingHubClient';
+import Client from '../src/Client';
 import TcpTransport from './helpers/TcpTransport';
 import TcpLimeServer from './helpers/TcpLimeServer';
 
 require('chai').should();
 
-describe('MessagingHubClient', function () {
+describe('Client', function () {
 
     function buildClient(address) {
-        return new MessagingHubClient(address || '127.0.0.1:8124', () => new TcpTransport());
+        return new Client(address || '127.0.0.1:8124', () => new TcpTransport());
     }
 
     //
@@ -63,7 +63,7 @@ describe('MessagingHubClient', function () {
     this.timeout(2000);
 
     it('should connect when creating with transport instance', (done) => {
-        this.client =  new MessagingHubClient('127.0.0.1:8124', new TcpTransport());
+        this.client =  new Client('127.0.0.1:8124', new TcpTransport());
         this.client.listening.should.equal(false);
         this.client.connectWithGuest('guest').then(() => {
             this.client.listening.should.equal(true);
@@ -71,14 +71,14 @@ describe('MessagingHubClient', function () {
         });
     });
 
-    it('should connect with plain authentication converting to a base64 password', (done) => {
+    it('should connect with plain authentication', (done) => {
         const clientWithoutIdentifier = buildClient();
         clientWithoutIdentifier.connectWithPassword.bind(clientWithoutIdentifier).should.throw(Error);
 
         const clientWithoutPassword = buildClient();
         clientWithoutPassword.connectWithPassword.bind(clientWithoutPassword, 'test2').should.throw(Error);
 
-        this.client.connectWithPassword('test', '123456').then(() => done());
+        this.client.connectWithPassword('test', 'MTIzNDU2').then(() => done());
     });
 
     it('should connect with key authentication', (done) => {
@@ -107,7 +107,7 @@ describe('MessagingHubClient', function () {
             done();
         };
 
-        this.client.connectWithGuest('guest2');
+        this.client.connectWithPassword('test', 'MTIzNDU2');
     });
 
     it('should automatically send a set receipt command when connecting', (done) => {
@@ -131,7 +131,7 @@ describe('MessagingHubClient', function () {
             done();
         };
 
-        this.client.connectWithGuest('guest2');
+        this.client.connectWithPassword('test', 'MTIzNDU2');
     });
 
     it('should add and remove message listeners', (done) => {
@@ -265,27 +265,27 @@ describe('MessagingHubClient', function () {
 
     it('should automatically send received notifications for messages', (done) => {
         this.client.addMessageReceiver(() => true, () => true);
-        this.client.addNotificationReceiver('received', () => done());
+        this.client.addNotificationReceiver(n => n.event === 'received' && n.id === '1', () => done());
 
         this.client
             .connectWithKey('test', 'YWJjZGVm')
-            .then(() => this.server.broadcast({ type: 'text/plain', content: 'test' }));
+            .then(() => this.server.broadcast({ id: '1', type: 'text/plain', content: 'test' }));
     });
 
     it('should automatically send consumed notifications for messages when receiver successfully handles it', (done) => {
         this.client.addMessageReceiver(() => true, () => true);
-        this.client.addNotificationReceiver('consumed', () => done());
+        this.client.addNotificationReceiver(n => n.event === 'consumed' && n.id === '1', () => done());
 
         this.client
             .connectWithKey('test', 'YWJjZGVm')
-            .then(() => this.server.broadcast({ type: 'text/plain', content: 'test' }));
+            .then(() => this.server.broadcast({ id: '1', type: 'text/plain', content: 'test' }));
     });
 
     it('should automatically send failed notifications for messages when receiver fails to handle it', (done) => {
         this.client.addMessageReceiver(() => true, () => {
             throw new Error('test error');
         });
-        this.client.addNotificationReceiver('failed', (n) => {
+        this.client.addNotificationReceiver(n => n.event === 'failed' && n.id === '1', (n) => {
             n.reason.code.should.equal(101);
             n.reason.description.should.equal('test error');
             done();
@@ -293,7 +293,7 @@ describe('MessagingHubClient', function () {
 
         this.client
             .connectWithKey('test', 'YWJjZGVm')
-            .then(() => this.server.broadcast({ type: 'text/plain', content: 'test' }));
+            .then(() => this.server.broadcast({ id: '1', type: 'text/plain', content: 'test' }));
     });
 
     it('should send commands and receive a response', (done) => {

@@ -37,10 +37,12 @@ Or you can also use the script served by [unpkg](https://unpkg.com):
 
 ### Instantiate the MessagingHub Client
 ```javascript
-var client = new MessagingHubClient(uri, transport);
+import * as MessagingHub from 'messaginghub-client';
+
+var client = new MessagingHub.Client(uri, transport);
 
 // e.g.
-var client = new MessagingHubClient('ws://msging.net:8081', function() { return new Lime.WebSocketTransport() });
+var client = new MessagingHub.Client('ws://msging.net:8081', function() { return new Lime.WebSocketTransport() });
 ```
 
 #### Transport packages

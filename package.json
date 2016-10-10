@@ -42,6 +42,7 @@
     "eslint-loader": "^1.1.1",
     "ghooks": "^1.2.4",
     "istanbul": "^0.4.1",
+    "json-loader": "^0.5.4",
     "mocha": "^2.3.4",
     "semantic-release": "^4.3.5",
     "webpack": "^1.12.9"
@@ -49,7 +50,8 @@
   "dependencies": {
     "bluebird": "^3.4.0",
     "js-base64": "^2.1.9",
-    "lime-js": "^2.1.3"
+    "lime-js": "^2.1.3",
+    "lime-transport-websocket": "^2.0.0"
   },
   "config": {
     "commitizen": {
