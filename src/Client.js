@@ -94,7 +94,10 @@ export default class Client {
 
         this._clientChannel = new Lime.ClientChannel(this._transport, true, false);
         this._clientChannel.onMessage = (message) => {
-            if (message.id) {
+            var shouldNotify = 
+                message.id && 
+                (!message.to || this._clientChannel.localNode.substring(0, message.to.length) === message.to);
+            if (shouldNotify) {
                 this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
             }
             let hasError = this._messageReceivers.some((receiver) => {
@@ -102,7 +105,7 @@ export default class Client {
                     try {
                         receiver.callback(message);
                     } catch (e) {
-                        if (message.id) {
+                        if (shouldNotify) {
                             this.sendNotification({
                                 id: message.id,
                                 to: message.from,
@@ -119,7 +122,7 @@ export default class Client {
                 }
             });
 
-            if (!hasError && message.id) {
+            if (!hasError && shouldNotify) {
                 this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
             }
         };
