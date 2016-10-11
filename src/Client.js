@@ -3,18 +3,18 @@ import Application from './Application';
 
 const identity = (x) => x;
 
-export default class Client {    
+export default class Client {
     // Client :: String -> Transport? -> Client
     constructor(uri, transportFactory, application) {
         let defaultApplication = new Application();
         if (application) {
-            for (var attributeName in defaultApplication) {
+            for (let attributeName in defaultApplication) {
                 if (!application[attributeName]) application[attributeName] = defaultApplication[attributeName];
             }
             this._application = application;
         } else {
             this._application = defaultApplication;
-        }        
+        }
         this._messageReceivers = [];
         this._notificationReceivers = [];
         this._commandResolves = {};
@@ -22,15 +22,15 @@ export default class Client {
         this._closing = false;
         this._uri = uri;
         this._transportFactory = typeof transportFactory === 'function' ? transportFactory : () => transportFactory;
-        this._transport = this._transportFactory();        
+        this._transport = this._transportFactory();
         this._initializeClientChannel();
     }
 
     // connectWithGuest :: String -> Promise Session
-    connectWithGuest(identifier) {                
+    connectWithGuest(identifier) {
         if (!identifier) throw new Error('The identifier is required');
         this._application.identifier = identifier;
-        this._application.authentication = new Lime.GuestAuthentication();            
+        this._application.authentication = new Lime.GuestAuthentication();
         return this.connect();
     }
 
@@ -38,7 +38,7 @@ export default class Client {
     connectWithPassword(identifier, password, presence) {
         if (!identifier) throw new Error('The identifier is required');
         if (!password) throw new Error('The password is required');
-        this._application.identifier = identifier;        
+        this._application.identifier = identifier;
         this._application.authentication = new Lime.PlainAuthentication();
         this._application.authentication.password = password;
         if (presence) this._application.presence = presence;
@@ -49,13 +49,13 @@ export default class Client {
     connectWithKey(identifier, key, presence) {
         if (!identifier) throw new Error('The identifier is required');
         if (!key) throw new Error('The key is required');
-        this._application.identifier = identifier;        
+        this._application.identifier = identifier;
         this._application.authentication = new Lime.KeyAuthentication();
         this._application.authentication.key = key;
-        if (presence) this._application.presence = presence;        
+        if (presence) this._application.presence = presence;
         return this.connect();
     }
-    
+
     connect() {
         this._closing = false;
         this._shouldReconnect = false;
@@ -63,10 +63,10 @@ export default class Client {
             ._transport
             .open(this.uri)
             .then(() => this._clientChannel.establishSession(
-                this._application.compression, 
-                this._application.encryption,                 
-                this._application.identifier + '@' + this._application.domain, 
-                this._application.authentication, 
+                this._application.compression,
+                this._application.encryption,
+                this._application.identifier + '@' + this._application.domain,
+                this._application.authentication,
                 this._application.instance))
             .then((session) => this._sendPresenceCommand().then(() => session))
             .then((session) => this._sendReceiptsCommand().then(() => session))
@@ -97,7 +97,7 @@ export default class Client {
             if (message.id) {
                 this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
             }
-            var hasError = this._messageReceivers.some((receiver) => {
+            let hasError = this._messageReceivers.some((receiver) => {
                 if (receiver.predicate(message)) {
                     try {
                         receiver.callback(message);
@@ -145,7 +145,7 @@ export default class Client {
     _sendReceiptsCommand() {
         if (this._application.authentication instanceof Lime.GuestAuthentication) {
             return Promise.resolve();
-        }        
+        }
         return this.sendCommand({
             id: Lime.Guid(),
             method: Lime.CommandMethod.SET,
@@ -182,7 +182,7 @@ export default class Client {
     // sendCommand :: Command -> Promise Command
     sendCommand(command) {
         this._clientChannel.sendCommand(command);
-        return new Promise((resolve, reject) => {
+        return Promise.race([new Promise((resolve, reject) => {
             this._commandResolves[command.id] = (c) => {
                 if (c.status) {
                     if (c.status === Lime.CommandStatus.SUCCESS) {
@@ -194,7 +194,13 @@ export default class Client {
                     delete this._commandResolves[command.id];
                 }
             };
-        });
+        }), new Promise((resolve, reject) => {
+            setTimeout(() => {
+                delete this._commandResolves[command.id];
+                command.status = 'failure';
+                reject(command);
+            }, 5000);
+        })]);
     }
 
     // addMessageReceiver :: String -> (Message -> ()) -> Function

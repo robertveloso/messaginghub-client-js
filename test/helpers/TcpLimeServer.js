@@ -80,6 +80,8 @@ export default class TcpLimeServer {
             case '/ping':
                 socket.writeJSON(Commands.pingResponse(envelope));
                 break;
+            case '/timeout':
+                break;
             default:
                 socket.writeJSON(Commands.failureResponse(envelope));
             }
