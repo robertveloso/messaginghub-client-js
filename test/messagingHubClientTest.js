@@ -318,11 +318,11 @@ describe('Client', function () {
             });
     });
 
-    this.timeout(7000);
+    this.timeout(2000);
     it('should send command and receive a timeout', (done) => {
         this.client
             .connectWithKey('test', 'YWJjZGVm')
-            .then(() => this.client.sendCommand({ id: 'timeout', method: 'get', uri: '/timeout' }))
+            .then(() => this.client.sendCommand({ id: 'timeout', method: 'get', uri: '/timeout' }, 1000))
             .catch((c) => {
                 c.status.should.equal('failure');
                 done();

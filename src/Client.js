@@ -182,8 +182,9 @@ export default class Client {
         this._clientChannel.sendNotification(notification);
     }
 
-    // sendCommand :: Command -> Promise Command
-    sendCommand(command) {
+    // sendCommand :: Command -> Number -> Promise Command
+    sendCommand(command, timeout) {
+        if (!timeout) timeout = 30000;
         this._clientChannel.sendCommand(command);
         return Promise.race([new Promise((resolve, reject) => {
             this._commandResolves[command.id] = (c) => {
@@ -202,7 +203,7 @@ export default class Client {
                 delete this._commandResolves[command.id];
                 command.status = 'failure';
                 reject(command);
-            }, 5000);
+            }, timeout);
         })]);
     }
 
