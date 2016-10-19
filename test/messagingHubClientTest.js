@@ -64,7 +64,7 @@ describe('Client', function () {
 
 
     it('should connect when creating with transport instance', (done) => {
-        this.client =  new Client('127.0.0.1:8124', new TcpTransport());
+        this.client = new Client('127.0.0.1:8124', new TcpTransport());
         this.client.listening.should.equal(false);
         this.client.connectWithGuest('guest').then(() => {
             this.client.listening.should.equal(true);
@@ -313,6 +313,17 @@ describe('Client', function () {
         this.client
             .connectWithKey('test', 'YWJjZGVm')
             .then(() => this.client.sendCommand({ id: 'test', method: 'set', uri: '/unknown' }))
+            .catch((c) => {
+                c.status.should.equal('failure');
+                done();
+            });
+    });
+
+    this.timeout(2000);
+    it('should send command and receive a timeout', (done) => {
+        this.client
+            .connectWithKey('test', 'YWJjZGVm')
+            .then(() => this.client.sendCommand({ id: 'timeout', method: 'get', uri: '/timeout' }, 1000))
             .catch((c) => {
                 c.status.should.equal('failure');
                 done();

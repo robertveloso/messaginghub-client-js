@@ -9,19 +9,15 @@ export default class Client {
     constructor(uri, transportFactory, application) {
         let defaultApplication = new Application();
 
-        if (application) {
-            for (var attributeName in defaultApplication) {
-                if (!application[attributeName]) application[attributeName] = defaultApplication[attributeName];
-            }
-            this._application = application;
-        }
-        else {
-            this._application = defaultApplication;
-        }
+        this._application = {
+            ...defaultApplication,
+            ...application
+        };
 
         this._messageReceivers = [];
         this._notificationReceivers = [];
         this._commandResolves = {};
+        this.sessionPromise = new Promise(() => {});
 
         this._listening = false;
         this._closing = false;
@@ -97,15 +93,18 @@ export default class Client {
 
         this._clientChannel = new Lime.ClientChannel(this._transport, true, false);
         this._clientChannel.onMessage = (message) => {
-            if (message.id) {
+            var shouldNotify =
+                message.id &&
+                (!message.to || this._clientChannel.localNode.substring(0, message.to.length) === message.to);
+            if (shouldNotify) {
                 this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
             }
-            var hasError = this._messageReceivers.some((receiver) => {
+            let hasError = this._messageReceivers.some((receiver) => {
                 if (receiver.predicate(message)) {
                     try {
                         receiver.callback(message);
                     } catch (e) {
-                        if (message.id) {
+                        if (shouldNotify) {
                             this.sendNotification({
                                 id: message.id,
                                 to: message.from,
@@ -122,7 +121,7 @@ export default class Client {
                 }
             });
 
-            if (!hasError && message.id) {
+            if (!hasError && shouldNotify) {
                 this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
             }
         };
@@ -196,10 +195,11 @@ export default class Client {
         this._clientChannel.sendNotification(notification);
     }
 
-    // sendCommand :: Command -> Promise Command
-    sendCommand(command) {
+    // sendCommand :: Command -> Number -> Promise Command
+    sendCommand(command, timeout) {
+        if (!timeout) timeout = 30000;
         this._clientChannel.sendCommand(command);
-        return new Promise((resolve, reject) => {
+        return Promise.race([new Promise((resolve, reject) => {
             this._commandResolves[command.id] = (c) => {
                 if (c.status) {
                     if (c.status === Lime.CommandStatus.SUCCESS) {
@@ -211,7 +211,13 @@ export default class Client {
                     delete this._commandResolves[command.id];
                 }
             };
-        });
+        }), new Promise((resolve, reject) => {
+            setTimeout(() => {
+                delete this._commandResolves[command.id];
+                command.status = 'failure';
+                reject(command);
+            }, timeout);
+        })]);
     }
 
     // addMessageReceiver :: String -> (Message -> ()) -> Function

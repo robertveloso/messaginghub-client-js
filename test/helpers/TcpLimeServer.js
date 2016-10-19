@@ -88,6 +88,8 @@ export default class TcpLimeServer {
                 socket.writeJSON(Commands.killWithFailResponse(envelope));
                 socket.writeJSON(Sessions.failed);
                 break;
+            case '/timeout':
+                break;
             default:
                 socket.writeJSON(Commands.failureResponse(envelope));
             }

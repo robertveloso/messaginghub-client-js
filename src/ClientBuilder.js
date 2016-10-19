@@ -45,6 +45,7 @@ export default class ClientBuilder {
 
     withPort(port) {
         this._application.port = port;
+        return this;
     }
 
     withAccessKey(accessKey) {
