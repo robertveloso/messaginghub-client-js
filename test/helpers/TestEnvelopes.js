@@ -1,3 +1,11 @@
+function commandSuccess(envelope) {
+    return {
+        id: envelope.id,
+        method: envelope.method,
+        status: 'success'
+    };
+}
+
 export const Sessions = {
     authenticating: {
         id: '0',
@@ -13,29 +21,28 @@ export const Sessions = {
         id: '0',
         from: '127.0.0.1:8124',
         state: 'finished'
+    },
+    failed: {
+        id: '0',
+        from: '127.0.0.1:8124',
+        state: 'failed',
+        reason: {
+            code: 11,
+            description: 'The session was terminated by the server'
+        }
     }
 };
 export const Commands = {
-    pingResponse: (envelope) => ({
-        id: envelope.id,
-        method: 'get',
-        status: 'success'
-    }),
-    presenceResponse: (envelope) => ({
-        id: envelope.id,
-        method: 'set',
-        status: 'success'
-    }),
-    receiptResponse: (envelope) => ({
-        id: envelope.id,
-        method: 'set',
-        status: 'success'
-    }),
+    pingResponse: commandSuccess,
+    presenceResponse: commandSuccess,
+    receiptResponse: commandSuccess,
     failureResponse: (envelope) => ({
         id: envelope.id,
         method: envelope.method,
         status: 'failure'
-    })
+    }),
+    killResponse: commandSuccess,
+    killWithFailResponse: commandSuccess
 };
 export const Messages = {
     pong: {

@@ -19,13 +19,13 @@ describe('Client', function () {
         this.server = new TcpLimeServer();
         this.server.listen(8124)
             .then(() => this.client = buildClient())
-            .then(() => done());
+            .finally(() => done());
     });
 
     afterEach((done) => {
         this.client.close()
             .then(() => this.server.close())
-            .then(() => done());
+            .finally(() => done());
     });
 
     //
@@ -61,6 +61,7 @@ describe('Client', function () {
     });
 
     this.timeout(2000);
+
 
     it('should connect when creating with transport instance', (done) => {
         this.client =  new Client('127.0.0.1:8124', new TcpTransport());
@@ -314,6 +315,37 @@ describe('Client', function () {
             .then(() => this.client.sendCommand({ id: 'test', method: 'set', uri: '/unknown' }))
             .catch((c) => {
                 c.status.should.equal('failure');
+                done();
+            });
+    });
+
+    it('should receive a finished session', (done) => {
+        this.client
+            .connectWithKey('test', 'YWJjZGVm')
+            .then(() => this.client.sendCommand({ id: 'test', method: 'set', uri: '/kill' }));
+
+        this.client.sessionPromise
+            .then((s) => {
+                s.state.should.equal('finished');
+                done();
+            });
+    });
+
+    it('should received a failed session', (done) => {
+        this.client
+            .connectWithKey('test', 'YWJjZGVm')
+            .then(() => this.client.sendCommand({ id: 'test', method: 'set', uri: '/killWithFail' }));
+
+        this.client
+            .sessionPromise
+            .catch((s) => {
+                s.state.should.equal('failed');
+                s.reason.code.should.equal(11);
+                return this.client.close();
+            })
+            .then((s) => {
+                s.state.should.equal('failed');
+                s.reason.code.should.equal(11);
                 done();
             });
     });

@@ -80,6 +80,14 @@ export default class TcpLimeServer {
             case '/ping':
                 socket.writeJSON(Commands.pingResponse(envelope));
                 break;
+            case '/kill':
+                socket.writeJSON(Commands.killResponse(envelope));
+                socket.writeJSON(Sessions.finished);
+                break;
+            case '/killWithFail':
+                socket.writeJSON(Commands.killWithFailResponse(envelope));
+                socket.writeJSON(Sessions.failed);
+                break;
             default:
                 socket.writeJSON(Commands.failureResponse(envelope));
             }
