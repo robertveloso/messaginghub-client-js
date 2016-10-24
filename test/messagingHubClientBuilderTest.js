@@ -20,6 +20,7 @@ describe('ClientBuilder', function () {
             .withEcho(true)
             .withEncryption(Lime.SessionEncryption.NONE)
             .withPort(8126)
+            .withNotifyConsumed(false)
             .build();
     }
 
@@ -31,6 +32,7 @@ describe('ClientBuilder', function () {
         client._application.instance.should.equal('test');
         client._application.compression.should.equal('none');
         client._application.encryption.should.equal('none');
+        client._application.notifyConsumed.should.equal(false);
         done();
     });
 });

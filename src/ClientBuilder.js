@@ -87,6 +87,11 @@ export default class ClientBuilder {
         return this;
     }
 
+    withNotifyConsumed(notifyConsumed){
+        this._application.notifyConsumed = notifyConsumed;
+        return this;
+    }
+
     build() {
         let uri = `${this._application.scheme}://${this._application.hostName}:${this._application.port}`; 
         let transportFactory = () => new WebSocketTransport();

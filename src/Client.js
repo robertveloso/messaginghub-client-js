@@ -121,7 +121,7 @@ export default class Client {
                 }
             });
 
-            if (!hasError && shouldNotify) {
+            if (!hasError && shouldNotify && this._application.notifyConsumed) {
                 this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
             }
         };

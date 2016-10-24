@@ -16,6 +16,7 @@ export default class Application {
             status: 'available',
             routingRule: 'identity'
         };
+        this.notifyConsumed = true;
         this.authentication = new Lime.GuestAuthentication();
     }
 }

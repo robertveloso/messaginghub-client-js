@@ -282,6 +282,19 @@ describe('Client', function () {
             .then(() => this.server.broadcast({ id: '1', type: 'text/plain', content: 'test' }));
     });
 
+
+    it('should not send consumed notifications for messages when notifyConsumed is false', (done) => {
+        this.client._application.notifyConsumed = false;
+        this.client.addMessageReceiver(() => true, () => true);
+        this.client.addNotificationReceiver(n => n.event === 'consumed' && n.id === '1', () => { throw new Error(); });
+
+        this.client
+            .connectWithKey('test', 'YWJjZGVm')
+            .then(() => this.server.broadcast({ id: '1', type: 'text/plain', content: 'test' }));
+
+        setTimeout(() => done(), 1800);
+    });
+
     it('should automatically send failed notifications for messages when receiver fails to handle it', (done) => {
         this.client.addMessageReceiver(() => true, () => {
             throw new Error('test error');
