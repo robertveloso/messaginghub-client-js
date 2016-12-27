@@ -2,7 +2,7 @@
 /* global utils */
 /* global Lime */
 /* global MessagingHub */
-(function (window) {
+(function(window) {
     'use strict';
 
     // buttons
@@ -49,8 +49,12 @@
         $connectButton.disabled = true;
         $disconnectButton.disabled = false;
         messagingHubClient.connect()
-            .then(() => utils.logMessage('Client connected'))
-            .catch((err) => utils.logMessage(err));
+            .then(function() {
+                utils.logMessage('Client connected');
+            })
+            .catch(function(err) {
+                utils.logMessage(err);
+            });
     }
 
     function setDisconnectedState() {
