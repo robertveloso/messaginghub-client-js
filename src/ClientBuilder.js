@@ -1,5 +1,5 @@
 import Lime from 'lime-js';
-import WebSocketTransport from 'lime-transport-websocket';
+import WebSocketHttpTransport from 'lime-transport-websocket-http';
 import MessagingHubClient from './Client';
 import Application from './Application';
 
@@ -94,7 +94,7 @@ export default class ClientBuilder {
 
     build() {
         let uri = `${this._application.scheme}://${this._application.hostName}:${this._application.port}`; 
-        let transportFactory = () => new WebSocketTransport();
+        let transportFactory = () => new WebSocketHttpTransport();
         return new MessagingHubClient(uri, transportFactory, this._application);
     }
 }
