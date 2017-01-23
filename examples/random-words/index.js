@@ -2,6 +2,7 @@
 'use strict';
 
 let Lime = require('lime-js');
+let WebSocketTransport = require('lime-transport-websocket');
 let MessagingHub = require('messaginghub-client');
 let request = require('request-promise');
 
@@ -15,6 +16,7 @@ const API_ENDPOINT = 'http://randomword.setgetgo.com/get.php';
 let client = new MessagingHub.ClientBuilder()
     .withIdentifier(IDENTIFIER)
     .withAccessKey(ACCESS_KEY)
+    .withTransportFactory(() => new WebSocketTransport())
     .build();
 
 let lastAnswerForUser = {};

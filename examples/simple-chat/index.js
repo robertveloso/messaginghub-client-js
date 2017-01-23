@@ -32,6 +32,7 @@
         messagingHubClient = new MessagingHub.ClientBuilder()
             .withIdentifier(identity)
             .withPassword(password)
+            .withTransportFactory(() => new WebSocketHttpTransport())
             .build();
 
         messagingHubClient.addMessageReceiver(null, function (message) {
