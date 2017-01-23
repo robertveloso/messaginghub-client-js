@@ -3,6 +3,7 @@
 /*eslint-env node, mocha */
 
 import ClientBuilder from '../src/ClientBuilder';
+import LimeTransportWebsocket from 'lime-transport-websocket';
 import Lime from 'lime-js';
 
 require('chai').should();
@@ -21,6 +22,7 @@ describe('ClientBuilder', function () {
             .withEncryption(Lime.SessionEncryption.NONE)
             .withPort(8126)
             .withNotifyConsumed(false)
+            .withTransportFactory(() => new LimeTransportWebsocket())
             .build();
     }
 
