@@ -1,6 +1,7 @@
 /* eslint-env browser */
 /* global utils */
 /* global Lime */
+/* global WebSocketHttpTransport */
 /* global MessagingHub */
 (function(window) {
     'use strict';
