@@ -52,7 +52,7 @@
     "bluebird": "^3.4.0",
     "js-base64": "^2.1.9",
     "lime-js": "^2.3.0",
-    "lime-transport-websocket-http": "1.0.0"
+    "lime-transport-websocket": "^2.0.0"
   },
   "config": {
     "commitizen": {
