@@ -196,28 +196,36 @@ export default class Client {
     }
 
     // sendCommand :: Command -> Number -> Promise Command
-    sendCommand(command, timeout) {
-        if (!timeout) timeout = 30000;
+    sendCommand(command, timeout = 3000) {
         this._clientChannel.sendCommand(command);
-        return Promise.race([new Promise((resolve, reject) => {
-            this._commandResolves[command.id] = (c) => {
-                if (c.status) {
+
+        return Promise.race([
+            new Promise((resolve, reject) => {
+                this._commandResolves[command.id] = (c) => {
+                    if (!c.status)
+                        return;
+
                     if (c.status === Lime.CommandStatus.SUCCESS) {
                         resolve(c);
-                    } else {
+                    }
+                    else {
                         reject(c);
                     }
 
                     delete this._commandResolves[command.id];
-                }
-            };
-        }), new Promise((resolve, reject) => {
-            setTimeout(() => {
-                delete this._commandResolves[command.id];
-                command.status = 'failure';
-                reject(command);
-            }, timeout);
-        })]);
+                };
+            }),
+            new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (!this._commandResolves[command.id])
+                        return;
+
+                    delete this._commandResolves[command.id];
+                    command.status = 'failure';
+                    reject(command);
+                }, timeout);
+            })
+        ]);
     }
 
     // addMessageReceiver :: String -> (Message -> ()) -> Function
