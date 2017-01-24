@@ -30,10 +30,22 @@
 
     function createClient(uri, identity, password) {
 
+        var scheme = uri.match(/^(\w+):\/\//)[1];
+        var hostName = uri.match(/:\/\/([^:\/]+)([:\/]|$)/)[1];
+        var port = uri.match(/:(\d+)/);
+        port = port ? port[1] : 8081;
+
         messagingHubClient = new MessagingHub.ClientBuilder()
             .withIdentifier(identity)
             .withPassword(password)
-            .withTransportFactory(() => new WebSocketHttpTransport())
+            .withScheme(scheme)
+            .withHostName(hostName)
+            .withPort(port)
+            .withTransportFactory(() => {
+                return new WebSocketHttpTransport({
+                    localNode: identity
+                });
+            })
             .build();
 
         messagingHubClient.addMessageReceiver(null, function (message) {
