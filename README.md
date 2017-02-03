@@ -33,16 +33,19 @@ Or you can also use the script served by [unpkg](https://unpkg.com):
 ```html
 <script src="https://unpkg.com/lime-js" type="text/javascript"></script>
 <script src="https://unpkg.com/messaginghub-client" type="text/javascript"></script>
+<script src="https://unpkg.com/lime-transport-websocket" type="text/javascript"></script>
 ```
 
 ### Instantiate the MessagingHub Client
 ```javascript
 import * as MessagingHub from 'messaginghub-client';
+import * as WebSocketTransport from 'lime-transport-websocket'
 
-var client = new MessagingHub.Client(uri, transport);
-
-// e.g.
-var client = new MessagingHub.Client('ws://msging.net:8081', function() { return new Lime.WebSocketTransport() });
+let client = new MessagingHub.ClientBuilder()
+    .withIdentifier(IDENTIFIER)
+    .withAccessKey(ACCESS_KEY)
+    .withTransportFactory(() => new WebSocketTransport())
+    .build();
 ```
 
 #### Transport packages
