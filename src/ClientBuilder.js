@@ -59,6 +59,20 @@ export default class ClientBuilder {
         return this;
     }
 
+    withToken(token) {
+        this._application.authentication = new Lime.ExternalAuthentication();
+        this._application.authentication.token = token;
+        return this;
+    }
+
+    withIssuer(issuer) {
+        if (!this._application.authentication) {
+            this._application.authentication = new Lime.ExternalAuthentication();
+        }
+        this._application.authentication.issuer = issuer;
+        return this;
+    }
+
     // withCompression :: Lime.SessionCompression.NONE -> ClientBuilder
     withCompression(compression) {
         this._application.compression = compression;
