@@ -1,5 +1,5 @@
 # messaging-hub-client-js
-> Simple Messaging Hub client for JavaScript
+> Simple BLiP Messaging Hub client for JavaScript
 
 **This is a work in progress**
 
@@ -16,7 +16,7 @@
 
 ![codecov.io](https://codecov.io/github/takenet/messaginghub-client-js/branch.svg?branch=develop)
 
-See more about Messaging Hub [here](http://messaginghub.io/)
+See more about BLiP Messaging Hub [here](http://blip.ai/)
 
 ## How to use
 If you are using node.js (or webpack), simply install the `messaginghub-client` package from the npm registry.
