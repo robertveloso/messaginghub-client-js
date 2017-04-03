@@ -1,8 +1,8 @@
 /* eslint-env browser */
-/* global WebSocketTransport */
-/* global MessagingHubClient */
 /* global utils */
 /* global Lime */
+/* global WebSocketHttpTransport */
+/* global MessagingHub */
 (function(window) {
     'use strict';
 
@@ -28,30 +28,47 @@
     var password;
     var uri;
 
-    function createClient(uri, identity, password){
-        messagingHubClient = new MessagingHubClient(uri, () => new WebSocketTransport(true));
+    function createClient(uri, identity, password) {
 
-        messagingHubClient.addMessageReceiver(null, function(message) {
+        var scheme = uri.match(/^(\w+):\/\//)[1];
+        var hostName = uri.match(/:\/\/([^:\/]+)([:\/]|$)/)[1];
+        var port = uri.match(/:(\d+)/);
+        port = port ? port[1] : 8081;
+
+        messagingHubClient = new MessagingHub.ClientBuilder()
+            .withIdentifier(identity)
+            .withPassword(password)
+            .withScheme(scheme)
+            .withHostName(hostName)
+            .withPort(port)
+            .withTransportFactory(() => {
+                return new WebSocketHttpTransport({
+                    localNode: identity
+                });
+            })
+            .build();
+
+        messagingHubClient.addMessageReceiver(null, function (message) {
             utils.logLimeMessage(message, 'Message received');
         });
 
-        messagingHubClient.addNotificationReceiver(null, function(notification) {
+        messagingHubClient.addNotificationReceiver(null, function (notification) {
             utils.logLimeNotification(notification, 'Notification received');
         });
 
         setConnectedState();
-        messagingHubClient
-            .connectWithPassword(identity, password)
-            .catch(function(err) {
-                utils.logMessage('An error occurred: ' + err);
-                return;
-            });        
     }
 
     function setConnectedState() {
         $connectButton.disabled = true;
         $disconnectButton.disabled = false;
-        utils.logMessage('Client connected');
+        messagingHubClient.connect()
+            .then(function() {
+                utils.logMessage('Client connected');
+            })
+            .catch(function(err) {
+                utils.logMessage(err);
+            });
     }
 
     function setDisconnectedState() {
@@ -60,7 +77,7 @@
         utils.logMessage('Client disconnected');
     }
 
-    window.connect = function() {
+    window.connect = function () {
         utils.checkMandatoryInput($identityInput);
         utils.checkMandatoryInput($uriInput);
 
@@ -71,12 +88,12 @@
         createClient(uri, identity, password);
     };
 
-    window.disconnect = function() {
+    window.disconnect = function () {
         messagingHubClient.close();
         setDisconnectedState();
     };
 
-    window.sendMessage = function() {
+    window.sendMessage = function () {
         var message = {
             id: Lime.Guid(),
             to: $messageToInput.value,
@@ -88,7 +105,7 @@
         utils.logLimeMessage(message, 'Message sent');
     };
 
-    window.sendNotification = function() {
+    window.sendNotification = function () {
         var notification = {
             id: $notificationIdInput.value,
             to: $notificationToInput.value,
@@ -99,7 +116,7 @@
         utils.logLimeNotification(notification, 'Notification sent');
     };
 
-    window.ping = function(){
+    window.ping = function () {
         var pingCommand = {
             id: Lime.Guid(),
             uri: '/ping',
@@ -108,11 +125,11 @@
 
         messagingHubClient
             .sendCommand(pingCommand)
-            .then(function(commandResponse) {
+            .then(function (commandResponse) {
                 utils.logLimeCommand(pingCommand, 'Ping sent');
                 utils.logLimeCommand(commandResponse, 'Ping response');
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 utils.logMessage('An error occurred: ' + err);
             });
     };

@@ -21,28 +21,32 @@ See more about Messaging Hub [here](http://messaginghub.io/)
 ## How to use
 If you are using node.js (or webpack), simply install the `messaginghub-client` package from the npm registry.
 
-    npm install --save messaginghub-client
+    npm install --save messaginghub-client lime-transport-websocket
 
 However, if you're building for the browser and using vanilla JavaScript, you can install the package via npm and then include the distribution script via a `<script>` tag. Note also, that in order to use `messaginghub-client` with this setting you must also install and use the `lime-js` library:
 ```html
 <script src="./node_modules/lime-js/dist/lime.js" type="text/javascript"></script>
 <script src="./node_modules/messaginghub-client/dist/messaginghub-client.js" type="text/javascript"></script>
+<script src="./node_modules/lime-transport-websocket/WebSocketTransport.js" type="text/javascript"></script>
 ```
 
 Or you can also use the script served by [unpkg](https://unpkg.com):
 ```html
 <script src="https://unpkg.com/lime-js" type="text/javascript"></script>
 <script src="https://unpkg.com/messaginghub-client" type="text/javascript"></script>
+<script src="https://unpkg.com/lime-transport-websocket" type="text/javascript"></script>
 ```
 
 ### Instantiate the MessagingHub Client
 ```javascript
 import * as MessagingHub from 'messaginghub-client';
+import * as WebSocketTransport from 'lime-transport-websocket'
 
-var client = new MessagingHub.Client(uri, transport);
-
-// e.g.
-var client = new MessagingHub.Client('ws://msging.net:8081', function() { return new Lime.WebSocketTransport() });
+let client = new MessagingHub.ClientBuilder()
+    .withIdentifier(IDENTIFIER)
+    .withAccessKey(ACCESS_KEY)
+    .withTransportFactory(() => new WebSocketTransport())
+    .build();
 ```
 
 #### Transport packages

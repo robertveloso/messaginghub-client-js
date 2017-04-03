@@ -2,6 +2,7 @@
 'use strict';
 
 let Lime = require('lime-js');
+let WebSocketTransport = require('lime-transport-websocket');
 let MessagingHub = require('messaginghub-client');
 let request = require('request-promise');
 
@@ -16,6 +17,7 @@ let client = new MessagingHub.ClientBuilder()
     .withHostName('hmg.msging.net')
     .withIdentifier(IDENTIFIER)
     .withAccessKey(ACCESS_KEY)
+    .withTransportFactory(() => new WebSocketTransport())
     .build();
 
 let lastAnswerForUser = {};

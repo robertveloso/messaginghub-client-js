@@ -1,5 +1,4 @@
 import Lime from 'lime-js';
-import WebSocketTransport from 'lime-transport-websocket';
 import MessagingHubClient from './Client';
 import Application from './Application';
 
@@ -60,6 +59,20 @@ export default class ClientBuilder {
         return this;
     }
 
+    withToken(token) {
+        this._application.authentication = new Lime.ExternalAuthentication();
+        this._application.authentication.token = token;
+        return this;
+    }
+
+    withIssuer(issuer) {
+        if (!this._application.authentication) {
+            this._application.authentication = new Lime.ExternalAuthentication();
+        }
+        this._application.authentication.issuer = issuer;
+        return this;
+    }
+
     // withCompression :: Lime.SessionCompression.NONE -> ClientBuilder
     withCompression(compression) {
         this._application.compression = compression;
@@ -92,9 +105,13 @@ export default class ClientBuilder {
         return this;
     }
 
+    withTransportFactory(transportFactory){
+        this._transportFactory = transportFactory;
+        return this;
+    }
+
     build() {
         let uri = `${this._application.scheme}://${this._application.hostName}:${this._application.port}`; 
-        let transportFactory = () => new WebSocketTransport();
-        return new MessagingHubClient(uri, transportFactory, this._application);
+        return new MessagingHubClient(uri, this._transportFactory, this._application);
     }
 }
