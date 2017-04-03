@@ -17,7 +17,7 @@ export default class Client {
         this._messageReceivers = [];
         this._notificationReceivers = [];
         this._commandResolves = {};
-        this.sessionPromise = new Promise(() => {});
+        this.sessionPromise = new Promise(() => { });
 
         this._listening = false;
         this._closing = false;
@@ -99,10 +99,15 @@ export default class Client {
             if (shouldNotify) {
                 this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
             }
-            let hasError = this._messageReceivers.some((receiver) => {
-                if (receiver.predicate(message)) {
+
+            let hasError = false;
+
+            for (var i = 0; i < this._messageReceivers.length; i++) {
+                if (this._messageReceivers[i].predicate(message)) {
                     try {
-                        receiver.callback(message);
+                        if (this._messageReceivers[i].callback(message) === false) {
+                            return;
+                        }
                     } catch (e) {
                         if (shouldNotify) {
                             this.sendNotification({
@@ -116,10 +121,10 @@ export default class Client {
                             });
                         }
 
-                        return true;
+                        hasError = true;
                     }
                 }
-            });
+            }
 
             if (!hasError && shouldNotify && this._application.notifyConsumed) {
                 this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });

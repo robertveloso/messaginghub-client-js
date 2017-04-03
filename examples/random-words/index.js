@@ -7,12 +7,13 @@ let request = require('request-promise');
 
 // These are the MessagingHub credentials for this bot.
 // If you want to create your own bot, see http://blip.ai
-const IDENTIFIER = 'randomwords';
-const ACCESS_KEY = 'aklFSmllSER1b25VakRKOXp3eFE=';
+const IDENTIFIER = 'sdkbreno';
+const ACCESS_KEY = 'OENvWVRtWUJUN2JjYWQ3S2xUSGI=';
 const API_ENDPOINT = 'http://randomword.setgetgo.com/get.php';
 
 // instantiate and setup client
 let client = new MessagingHub.ClientBuilder()
+    .withHostName('hmg.msging.net')
     .withIdentifier(IDENTIFIER)
     .withAccessKey(ACCESS_KEY)
     .build();
@@ -20,6 +21,13 @@ let client = new MessagingHub.ClientBuilder()
 let lastAnswerForUser = {};
 
 client.addMessageReceiver(() => true, (m) => {
+    console.log('Receiver 1');
+    console.log(m);
+    return true;
+});
+
+client.addMessageReceiver(() => true, (m) => {
+    console.log('Receiver 2');
     if (m.type !== 'text/plain') return;
 
     console.log(`<< ${m.from}: ${m.content}`);
@@ -30,13 +38,13 @@ client.addMessageReceiver(() => true, (m) => {
 
     switch (lastAnswerForUser[m.from]) {
     case undefined:
-        registerAction({ category: 'User', action: 'first request'});
+        registerAction({ category: 'User', action: 'first request' });
         break;
     case false:
-        registerAction({ category: 'User', action: 'asked again after denial'});
+        registerAction({ category: 'User', action: 'asked again after denial' });
         break;
     default:
-        registerAction({ category: 'User', action: 'asked again after answer'});
+        registerAction({ category: 'User', action: 'asked again after answer' });
         break;
     }
 
@@ -80,5 +88,5 @@ function registerAction(resource) {
         uri: '/event-track',
         resource: resource
     })
-    .catch(e => console.log(e));
+        .catch(e => console.log(e));
 }
