@@ -93,42 +93,15 @@ export default class Client {
 
         this._clientChannel = new Lime.ClientChannel(this._transport, true, false);
         this._clientChannel.onMessage = (message) => {
-            var shouldNotify =
+            let shouldNotify =
                 message.id &&
                 (!message.to || this._clientChannel.localNode.substring(0, message.to.length) === message.to);
+
             if (shouldNotify) {
                 this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.RECEIVED });
             }
 
-            let hasError = false;
-
-            for (var i = 0; i < this._messageReceivers.length; i++) {
-                if (this._messageReceivers[i].predicate(message)) {
-                    try {
-                        if (this._messageReceivers[i].callback(message) === false) {
-                            return;
-                        }
-                    } catch (e) {
-                        if (shouldNotify) {
-                            this.sendNotification({
-                                id: message.id,
-                                to: message.from,
-                                event: Lime.NotificationEvent.FAILED,
-                                reason: {
-                                    code: 101,
-                                    description: e.message
-                                }
-                            });
-                        }
-
-                        hasError = true;
-                    }
-                }
-            }
-
-            if (!hasError && shouldNotify && this._application.notifyConsumed) {
-                this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
-            }
+            this._loop(0, shouldNotify, message);
         };
         this._clientChannel.onNotification = (notification) =>
             this._notificationReceivers
@@ -139,6 +112,49 @@ export default class Client {
             this._clientChannel.onSessionFinished = resolve;
             this._clientChannel.onSessionFailed = reject;
         });
+    }
+
+    _loop(i, shouldNotify, message) {
+        try {
+            if (i <= this._messageReceivers.length) {
+                if (this._messageReceivers[i].predicate(message)) {
+                    return Promise.resolve(this._messageReceivers[i].callback(message))
+                        .then((result) => {
+                            return new Promise((resolve, reject) => {
+                                if (result === false) {
+                                    reject();
+                                }
+                                resolve();
+                            });
+                        })
+                        .then(() => this._loop(i + 1, shouldNotify, message));
+                }
+                else {
+                    this._loop(i + 1, shouldNotify, message);
+                }
+            }
+        }
+        catch (e) {
+            this._notify(shouldNotify, message, e);
+        }
+    }
+
+    _notify(shouldNotify, message, e) {
+        if (shouldNotify) {
+            this.sendNotification({
+                id: message.id,
+                to: message.from,
+                event: Lime.NotificationEvent.FAILED,
+                reason: {
+                    code: 101,
+                    description: e.message
+                }
+            });
+        }
+
+        if (shouldNotify && this._application.notifyConsumed) {
+            this.sendNotification({ id: message.id, to: message.from, event: Lime.NotificationEvent.CONSUMED });
+        }
     }
 
     _sendPresenceCommand() {
