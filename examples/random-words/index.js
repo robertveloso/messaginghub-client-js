@@ -14,7 +14,6 @@ const API_ENDPOINT = 'http://randomword.setgetgo.com/get.php';
 
 // instantiate and setup client
 let client = new MessagingHub.ClientBuilder()
-    .withHostName('hmg.msging.net')
     .withIdentifier(IDENTIFIER)
     .withAccessKey(ACCESS_KEY)
     .withTransportFactory(() => new WebSocketTransport())
