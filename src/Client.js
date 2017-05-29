@@ -116,7 +116,7 @@ export default class Client {
 
     _loop(i, shouldNotify, message) {
         try {
-            if (i <= this._messageReceivers.length) {
+            if (i < this._messageReceivers.length) {
                 if (this._messageReceivers[i].predicate(message)) {
                     return Promise.resolve(this._messageReceivers[i].callback(message))
                         .then((result) => {
@@ -133,6 +133,9 @@ export default class Client {
                     this._loop(i + 1, shouldNotify, message);
                 }
             }
+            else {
+                this._notify(shouldNotify, message, null);
+            }
         }
         catch (e) {
             this._notify(shouldNotify, message, e);
@@ -140,7 +143,7 @@ export default class Client {
     }
 
     _notify(shouldNotify, message, e) {
-        if (shouldNotify) {
+        if (shouldNotify && e) {
             this.sendNotification({
                 id: message.id,
                 to: message.from,
