@@ -220,7 +220,7 @@ export default class Client {
     }
 
     // sendCommand :: Command -> Number -> Promise Command
-    sendCommand(command, timeout = 3000) {
+    sendCommand(command, timeout = this._application.commandTimeout) {
         this._clientChannel.sendCommand(command);
 
         return Promise.race([

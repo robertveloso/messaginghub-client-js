@@ -111,6 +111,10 @@ export default class ClientBuilder {
         return this;
     }
 
+    withCommandTimeout(timeout){
+        this._application.commandTimeout = timeout;
+    }
+
     build() {
         let uri = `${this._application.scheme}://${this._application.hostName}:${this._application.port}`; 
         if (!this._transportFactory) this._transportFactory = () => new WebSocketTransport();        

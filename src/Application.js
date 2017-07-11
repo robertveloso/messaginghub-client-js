@@ -18,5 +18,6 @@ export default class Application {
         };
         this.notifyConsumed = true;
         this.authentication = new Lime.GuestAuthentication();
+        this.commandTimeout = 6000;
     }
 }
