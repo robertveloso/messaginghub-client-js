@@ -87,7 +87,7 @@ as shown in the examples below:
 client.connectWithKey(identifier, key)
     .then(function(session) {
       // send a message to some user
-      var msg = { type: "application/json", content: "Hello, world", to: "my@friend.com" };
+      var msg = { type: "text/plain", content: "Hello, world", to: "my@friend.com" };
       client.sendMessage(msg);
     });
 ```
