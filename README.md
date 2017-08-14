@@ -39,14 +39,27 @@ Or you can also use the script served by [unpkg](https://unpkg.com):
 
 ### Instantiate the MessagingHub Client
 ```javascript
-import * as MessagingHub from 'messaginghub-client';
-import * as WebSocketTransport from 'lime-transport-websocket'
+let MessagingHub = require('messaginghub-client');
+let WebSocketTransport = require('lime-transport-websocket');
 
 let client = new MessagingHub.ClientBuilder()
-    .withIdentifier(IDENTIFIER)
-    .withAccessKey(ACCESS_KEY)
+    .withIdentifier({Identifier})
+    .withAccessKey({AccessKey})
     .withTransportFactory(() => new WebSocketTransport())
     .build();
+
+
+client.addMessageReceiver(true, function (message) {
+    console.log(message);
+});
+
+client.connect()
+    .then(function (session) {
+        console.log('Connectado');
+    })
+    .catch(function (err) {
+        console.log(err);
+    });
 ```
 
 #### Transport packages
@@ -58,7 +71,9 @@ In order to use these transport classes in your project you must also include th
 
 ### Connect
 ```javascript
+client.connect().then(/* handle connection */);
 client.connectWithKey(identifier, key).then(/* handle connection */);
+client.connectWithPassword(identifier, password).then(/* handle connection */);
 ```
 
 ### Sending
