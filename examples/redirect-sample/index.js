@@ -97,7 +97,7 @@ client.addMessageReceiver((m) => m.type === 'application/json', (m) => {
                                         'attendance': 'manual'
                                     }
                                 }
-                            },
+                            }
                         ]
                     },
                     {
@@ -144,7 +144,7 @@ client.addMessageReceiver((m) => m.type === 'application/json', (m) => {
                     'value': 'New manual attendance'
                 }
             }
-        }
+        };
 
         client.sendCommand(command);
     }
@@ -186,7 +186,7 @@ client.addMessageReceiver(() => true, (m) => {
         metadata: {
             '#message.replaceVariables': 'true'
         }
-    }
+    };
 
     console.log(`>> ${message.to}: ${message.content}`);
 
