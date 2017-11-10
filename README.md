@@ -43,8 +43,8 @@ let MessagingHub = require('messaginghub-client');
 let WebSocketTransport = require('lime-transport-websocket');
 
 let client = new MessagingHub.ClientBuilder()
-    .withIdentifier({Identifier})
-    .withAccessKey({AccessKey})
+    .withIdentifier(Identifier)
+    .withAccessKey(AccessKey)
     .withTransportFactory(() => new WebSocketTransport())
     .build();
 
